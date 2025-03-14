@@ -1501,7 +1501,7 @@ background: transparent;</string>
            <string/>
           </property>
          </widget>
-         <widget class="QLineEdit" name="Psearch_5">
+         <widget class="QLineEdit" name="le_recherche">
           <property name="geometry">
            <rect>
             <x>630</x>
@@ -1550,7 +1550,7 @@ background-color:white;}</string>
            <string>Rechercher :</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="pushButton_telecharger_3">
+         <widget class="QPushButton" name="pushButton_rechercher">
           <property name="geometry">
            <rect>
             <x>820</x>

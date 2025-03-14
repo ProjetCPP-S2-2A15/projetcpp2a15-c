@@ -31,15 +31,16 @@ public:
     void setAdresse(QString adresse) { Adresse = adresse; }
     void setRole(QString role) { Role = role; }
     void setDateEmbauche(QDateTime dateEmbauche) { DateEmbauche = dateEmbauche; }
-
+    void chargerDonnees(int id);
     // Fonctionnalités CRUD
     bool ajouter();
     QSqlQueryModel *afficher();  // Déclaration correcte
     bool supprimer(int id);
     bool modifier(int id, QString nom, QString prenom, QString poste, double salaire,
                   QString status, QString adresse, QString role, QDateTime dateEmbauche);
-
-
+     static employee1 chercherParId(int id);
+    //bool modifier(int id);
+QSqlQueryModel* rechercherParNom(QString nomRecherche);
 private:
     int id_employe;
     QString Nom;

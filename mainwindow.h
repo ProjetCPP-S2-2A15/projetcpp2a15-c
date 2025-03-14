@@ -28,9 +28,10 @@ private slots:
     void on_pushButton_annuler_2_clicked();
     void on_pushButton_annuler_3_clicked();
     void on_btn_modifier_clicked();
-
+    void on_pushButton_rechercher_clicked();
 private:
     Ui::MainWindow *ui;
     employee1 emp;
+
 };
 #endif // MAINWINDOW_H

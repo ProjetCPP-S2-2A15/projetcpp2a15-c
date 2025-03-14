@@ -91,7 +91,7 @@ bool employee1::supprimer(int id_employe)
     return true;
 }
 
-bool employee1::modifier(int id, QString nom, QString prenom, QString poste, double salaire, QString status, QString adresse, QString role, QDateTime dateEmbauche)
+/*bool employee1::modifier(int id, QString nom, QString prenom, QString poste, double salaire, QString status, QString adresse, QString role, QDateTime dateEmbauche)
 {
     if (id <= 0) {
         qDebug() << "Erreur : ID invalide (" << id << ")";
@@ -147,3 +147,235 @@ bool employee1::modifier(int id, QString nom, QString prenom, QString poste, dou
     qDebug() << "Employé modifié avec succès!";
     return true;
 }
+*/
+
+/*bool employee1::modifier(int id, QString nom, QString prenom, QString poste, double salaire, QString status, QString adresse, QString role, QDateTime dateEmbauche)
+{
+    if (id <= 0) {
+        qDebug() << "Erreur : ID invalide (" << id << ")";
+        return false;
+    }
+
+    // Vérifier si l'ID existe avant modification
+    QSqlQuery checkQuery;
+    checkQuery.prepare("SELECT COUNT(*) FROM EMPLOYE WHERE ID_EMPLOYE = :ID");
+    checkQuery.bindValue(":ID", id);
+    if (!checkQuery.exec() || !checkQuery.next()) {
+        qDebug() << "Erreur SQL lors de la vérification de l'ID :" << checkQuery.lastError().text();
+        return false;
+    }
+
+    if (checkQuery.value(0).toInt() == 0) {
+        qDebug() << "Erreur : Aucun employé trouvé avec l'ID" << id;
+        return false;
+    }
+
+    // Préparer la requête de mise à jour
+    QSqlQuery query;
+    query.prepare("UPDATE EMPLOYE SET NOM = :NOM, PRENOM = :PRENOM, POSTE = :POSTE, SALAIRE = :SALAIRE, "
+                  "STATUS = :STATUS, ADRESSE = :ADRESSE, ROLE = :ROLE, DATE_E = :DATE_E WHERE ID_EMPLOYE = :ID");
+
+    query.bindValue(":ID", id);
+    query.bindValue(":NOM", nom);
+    query.bindValue(":PRENOM", prenom);
+    query.bindValue(":POSTE", poste);
+    query.bindValue(":SALAIRE", salaire);
+    query.bindValue(":STATUS", status);
+    query.bindValue(":ADRESSE", adresse);
+    query.bindValue(":ROLE", role);
+    query.bindValue(":DATE_E", dateEmbauche.toString("yyyy-MM-dd")); // Format pour colonne DATE
+
+    // Débogage : Afficher les valeurs
+    qDebug() << "Valeurs bindées -> ID:" << id << ", Nom:" << nom << ", Prénom:" << prenom
+             << ", Poste:" << poste << ", Salaire:" << salaire << ", Status:" << status
+             << ", Adresse:" << adresse << ", Rôle:" << role << ", Date Embauche:" << dateEmbauche.toString("yyyy-MM-dd");
+
+    // Exécuter la requête
+    if (!query.exec()) {
+        qDebug() << "Erreur SQL lors de la modification :" << query.lastError().text();
+        return false;
+    }
+
+    // Vérifier si la modification a bien eu lieu
+    if (query.numRowsAffected() == 0) {
+        qDebug() << "Aucune modification effectuée. Vérifie si les nouvelles valeurs sont identiques aux anciennes.";
+        return false;
+    }
+
+    qDebug() << "Employé modifié avec succès!";
+    return true;
+}
+*/
+
+/*bool employee1::modifier(int id, QString nom, QString prenom, QString poste, double salaire, QString status, QString adresse, QString role, QDateTime dateEmbauche)
+{
+    if (id <= 0) {
+        qDebug() << "Erreur : ID invalide (" << id << ")";
+        return false;
+    }
+
+    if (dateEmbauche.isNull() || !dateEmbauche.isValid()) {
+        qDebug() << "Erreur : dateEmbauche invalide.";
+        return false;
+    }
+
+    // Vérifier si l'employé existe avant modification
+    QSqlQuery checkQuery;
+    checkQuery.prepare("SELECT COUNT(*) FROM EMPLOYE WHERE ID_EMPLOYE = :ID");
+    checkQuery.bindValue(":ID", id);
+
+    if (!checkQuery.exec()) {
+        qDebug() << "Erreur SQL lors de la vérification de l'ID :" << checkQuery.lastError().text();
+        return false;
+    }
+
+    if (!checkQuery.next() || checkQuery.value(0).toInt() == 0) {
+        qDebug() << "Erreur : Aucun employé trouvé avec l'ID" << id;
+        return false;
+    }
+
+    // Préparer la requête de mise à jour
+    QSqlQuery query;
+    query.prepare("UPDATE EMPLOYE SET NOM = :NOM, PRENOM = :PRENOM, POSTE = :POSTE, SALAIRE = :SALAIRE, "
+                  "STATUS = :STATUS, ADRESSE = :ADRESSE, ROLE = :ROLE, DATE_E = :DATE_E WHERE ID_EMPLOYE = :ID");
+
+    query.bindValue(":ID", id);
+    query.bindValue(":NOM", nom);
+    query.bindValue(":PRENOM", prenom);
+    query.bindValue(":POSTE", poste);
+    query.bindValue(":SALAIRE", salaire);
+    query.bindValue(":STATUS", status);
+    query.bindValue(":ADRESSE", adresse);
+    query.bindValue(":ROLE", role);
+    query.bindValue(":DATE_E", dateEmbauche.toString("yyyy-MM-dd HH:mm:ss"));
+
+    // Débogage : Afficher les valeurs bindées
+    qDebug() << "Valeurs bindées -> ID:" << id << ", Nom:" << nom << ", Prénom:" << prenom
+             << ", Poste:" << poste << ", Salaire:" << salaire << ", Status:" << status
+             << ", Adresse:" << adresse << ", Rôle:" << role << ", Date Embauche:" << dateEmbauche.toString("yyyy-MM-dd");
+
+    // Exécuter la requête
+    if (!query.exec()) {
+        qDebug() << "Erreur SQL lors de la modification :" << query.lastError().text();
+        return false;
+    }
+
+    if (query.numRowsAffected() == 0) {
+        qDebug() << "Aucune modification effectuée. Vérifie si les nouvelles valeurs sont identiques aux anciennes.";
+        return false;
+    }
+
+    qDebug() << "Employé modifié avec succès!";
+    return true;
+}
+*/
+bool employee1::modifier(int id, QString nom, QString prenom, QString poste, double salaire, QString status, QString adresse, QString role, QDateTime dateEmbauche)
+{
+    if (id <= 0) {
+        qDebug() << "Erreur : ID invalide (" << id << ")";
+        return false;
+    }
+
+    if (dateEmbauche.isNull() || !dateEmbauche.isValid()) {
+        qDebug() << "Erreur : dateEmbauche invalide.";
+        return false;
+    }
+
+    // Vérifier si l'employé existe avant modification
+    QSqlQuery checkQuery;
+    checkQuery.prepare("SELECT COUNT(*) FROM EMPLOYE WHERE ID_EMPLOYE = :ID");
+    checkQuery.bindValue(":ID", id);
+
+    if (!checkQuery.exec()) {
+        qDebug() << "Erreur SQL lors de la vérification de l'ID :" << checkQuery.lastError().text();
+        return false;
+    }
+
+    if (!checkQuery.next() || checkQuery.value(0).toInt() == 0) {
+        qDebug() << "Erreur : Aucun employé trouvé avec l'ID" << id;
+        return false;
+    }
+
+    // Préparer la requête de mise à jour
+    QSqlQuery query;
+    query.prepare("UPDATE EMPLOYE SET NOM = :NOM, PRENOM = :PRENOM, POSTE = :POSTE, SALAIRE = :SALAIRE, "
+                  "STATUS = :STATUS, ADRESSE = :ADRESSE, ROLE = :ROLE, DATE_E = :DATE_E WHERE ID_EMPLOYE = :ID");
+
+    query.bindValue(":ID", id);
+    query.bindValue(":NOM", nom);
+    query.bindValue(":PRENOM", prenom);
+    query.bindValue(":POSTE", poste);
+    query.bindValue(":SALAIRE", salaire);
+    query.bindValue(":STATUS", status);
+    query.bindValue(":ADRESSE", adresse);
+    query.bindValue(":ROLE", role);
+    query.bindValue(":DATE_E", dateEmbauche.toString("yyyy-MM-dd HH:mm:ss"));
+
+    // Débogage : Afficher la requête SQL complète
+    qDebug() << "Requête SQL : " << query.lastQuery();  // Afficher la requête SQL complète
+
+    // Débogage : Afficher les valeurs bindées
+    qDebug() << "Valeurs bindées -> ID:" << id << ", Nom:" << nom << ", Prénom:" << prenom
+             << ", Poste:" << poste << ", Salaire:" << salaire << ", Status:" << status
+             << ", Adresse:" << adresse << ", Rôle:" << role << ", Date Embauche:" << dateEmbauche.toString("yyyy-MM-dd");
+
+    // Exécuter la requête
+    if (!query.exec()) {
+        qDebug() << "Erreur SQL lors de la modification :" << query.lastError().text();
+        return false;
+    }
+
+    if (query.numRowsAffected() == 0) {
+        qDebug() << "Aucune modification effectuée. Vérifie si les nouvelles valeurs sont identiques aux anciennes.";
+        return false;
+    }
+
+    qDebug() << "Employé modifié avec succès!";
+    return true;
+}
+
+
+employee1 employee1::chercherParId(int id)
+{
+    employee1 emp; // Employé vide par défaut
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM EMPLOYE WHERE ID_EMPLOYE = :ID");
+    query.bindValue(":ID", id);
+
+    if (query.exec()) {
+        if (query.next()) { // Si un employé est trouvé
+            emp.setId(query.value("ID_EMPLOYE").toInt());
+            emp.setNom(query.value("NOM").toString());
+            emp.setPrenom(query.value("PRENOM").toString());
+            emp.setPoste(query.value("POSTE").toString());
+            emp.setSalaire(query.value("SALAIRE").toDouble());
+            emp.setStatus(query.value("STATUS").toString());
+            emp.setAdresse(query.value("ADRESSE").toString());
+            emp.setRole(query.value("ROLE").toString());
+            emp.setDateEmbauche(query.value("DATE_E").toDateTime());
+        }
+    } else {
+        qDebug() << "Erreur SQL lors de la recherche par ID :" << query.lastError().text();
+    }
+
+    return emp; // Retourne l'employé trouvé ou un objet vide si aucun résultat
+}
+
+QSqlQueryModel* employee1::rechercherParNom(QString nomRecherche)
+{
+    QSqlQueryModel* model = new QSqlQueryModel();
+    QSqlQuery query;
+
+    query.prepare("SELECT * FROM Employees WHERE LOWER(nom) LIKE LOWER(:nom)");
+    query.bindValue(":nom", "%" + nomRecherche.toLower() + "%");
+
+    if (!query.exec()) {
+        qDebug() << "Erreur lors de la recherche : " << query.lastError().text();
+        return nullptr;
+    }
+
+    model->setQuery(query);
+    return model;
+}
+

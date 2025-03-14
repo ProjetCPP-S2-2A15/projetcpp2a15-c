@@ -18,40 +18,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-/*void MainWindow::on_pushButton_ajouter_clicked()
-{
-    int id = ui->le_id->text().toInt();
-    QString nom = ui->le_nom->text();
-    QString prenom = ui->le_prenom->text();
-    QString poste = ui->le_poste->text();
-    double salaire = ui->le_salaire->text().toDouble();
-    QString status = ui->le_status->text();
-    QString adresse = ui->le_adresse->text();
-    QString role = ui->le_role->text();
-    QDateTime dateE = ui->le_dateE_2->dateTime();
-
-
-
-
-
-
-
-    if (nom.isEmpty() || prenom.isEmpty()  || poste.isEmpty() || status.isEmpty() || role.isEmpty() || !dateE.isValid()) {
-        QMessageBox::critical(this, "Erreur", "Veuillez remplir tous les champs obligatoires !");
-        return;
-    }
-
-    employee1 emp(id, nom, prenom, poste, salaire,  status,adresse, role , dateE);
-    bool test = emp.ajouter();
-
-    if (test) {
-        ui->tab_employee1->setModel(emp.afficher());
-        QMessageBox::information(this, "Succès", "Employé ajouté avec succès !");
-    } else {
-        QMessageBox::critical(this, "Erreur", "L'ajout de l'employé a échoué.");
-    }
-}
-*/
 void MainWindow::on_pushButton_ajouter_clicked()
 {
     // Récupération des données depuis l'interface
@@ -64,6 +30,9 @@ void MainWindow::on_pushButton_ajouter_clicked()
     QString adresse = ui->le_adresse->text();
     QString role = ui->le_role->text();
     QDateTime dateE = ui->le_dateE_2->dateTime();
+    static const QRegularExpression regexLettres("^[a-zA-Z\\s]+$");  // Pour nom, prénom, poste, rôle et status
+    static const QRegularExpression regexAdresse("^[a-zA-Z0-9\\s,.-]+$"); // Pour l'adresse
+
 
     // Vérification que tous les champs obligatoires sont remplis
     if (nom.isEmpty() || prenom.isEmpty() || poste.isEmpty() || status.isEmpty() || role.isEmpty() || adresse.isEmpty() || !dateE.isValid()) {
@@ -71,11 +40,7 @@ void MainWindow::on_pushButton_ajouter_clicked()
         return;
     }
 
-    // Validation de l'ID : Il doit être un entier positif
-    if (id <= 0) {
-        QMessageBox::critical(this, "Erreur", "L'ID doit être un nombre positif.");
-        return;
-    }
+
 
     // Validation du salaire : Il doit être un nombre supérieur à zéro
     if (salaire <= 0) {
@@ -90,15 +55,35 @@ void MainWindow::on_pushButton_ajouter_clicked()
     }
 
     // Validation du nom : Le nom ne doit pas contenir de chiffres
-    QRegularExpression regex("^[a-zA-Z\\s]+$");
-    if (!regex.match(nom).hasMatch()) {
+    QRegularExpression regexlettres("^[a-zA-Z\\s]+$");
+    if (!regexLettres.match(nom).hasMatch()) {
         QMessageBox::critical(this, "Erreur", "Le nom ne doit contenir que des lettres et des espaces.");
         return;
     }
 
     // Validation du prénom : Le prénom ne doit pas contenir de chiffres
-    if (!regex.match(prenom).hasMatch()) {
+    if (!regexLettres.match(prenom).hasMatch()) {
         QMessageBox::critical(this, "Erreur", "Le prénom ne doit contenir que des lettres et des espaces.");
+        return;
+    }
+    if (!regexLettres.match(poste).hasMatch()) {
+        QMessageBox::critical(this, "Erreur de validation", "Le poste ne doit contenir que des lettres et des espaces.");
+        return;
+    }
+
+    // Vérification pour le rôle
+    if (!regexLettres.match(role).hasMatch()) {
+        QMessageBox::critical(this, "Erreur de validation", "Le rôle ne doit contenir que des lettres et des espaces.");
+        return;
+    }
+
+    // Vérification pour l'adresse
+    if (!regexAdresse.match(adresse).hasMatch()) {
+        QMessageBox::critical(this, "Erreur de validation", "L'adresse ne doit contenir que des lettres, chiffres, espaces, virgules, points ou tirets.");
+        return;
+    }
+    if (!regexLettres.match(status).hasMatch()) {
+        QMessageBox::critical(this, "Erreur de validation", "Le statut ne doit contenir que des lettres et des espaces.");
         return;
     }
 
@@ -117,7 +102,9 @@ void MainWindow::on_pushButton_ajouter_clicked()
     }
 }
 
-void MainWindow::on_pushButton_ok_clicked()
+
+
+/*void MainWindow::on_pushButton_ok_clicked()
 {
     int id = ui->le_modif_id_emp->text().toInt();
 
@@ -145,20 +132,26 @@ void MainWindow::on_pushButton_ok_clicked()
 
     QMessageBox::information(this, "Succès", "Données de l'employé chargées !");
 }
+*/
 
-
+/*
 void MainWindow::on_pushButton_modifier_clicked()
 {
     int id = ui->le_modif_id_emp->text().toInt();
 
+    if (id <= 0) {
+        QMessageBox::warning(this, "Erreur", "ID invalide !");
+        return;
+    }
+
+    employee1 emp = employee1::chercherParId(id); // Assure-toi que cette fonction existe
 
     if (emp.getId() == 0) {
         QMessageBox::warning(this, "Employé introuvable", "Aucun employé trouvé avec cet ID !");
         return;
     }
 
-
-    // Fill UI fields with existing employee data
+    // Remplissage des champs
     ui->le_modif_nom->setText(emp.getNom());
     ui->le_modif_prenom->setText(emp.getPrenom());
     ui->le_modif_poste->setText(emp.getPoste());
@@ -168,13 +161,12 @@ void MainWindow::on_pushButton_modifier_clicked()
     ui->le_modif_role->setText(emp.getRole());
     ui->le_modif_dateE->setDateTime(emp.getDateEmbauche());
 
-    // Ask for confirmation before update
+    // Demande de confirmation
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Confirmer", "Voulez-vous modifier cet employé ?",
-                                  QMessageBox::Yes | QMessageBox::No);
+    reply = QMessageBox::question(this, "Confirmer", "Voulez-vous modifier cet employé ?", QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
-        // Retrieve updated values from UI
+        // Récupérer les nouvelles valeurs
         QString nom = ui->le_modif_nom->text();
         QString prenom = ui->le_modif_prenom->text();
         QString poste = ui->le_modif_poste->text();
@@ -184,26 +176,203 @@ void MainWindow::on_pushButton_modifier_clicked()
         QString role = ui->le_modif_role->text();
         QDateTime dateE = ui->le_modif_dateE->dateTime();
 
-        if (nom.isEmpty() || prenom.isEmpty() || poste.isEmpty() || status.isEmpty() || role.isEmpty() || !dateE.isValid()) {
-            QMessageBox::critical(nullptr, QObject::tr("Not OK"),
-                                  QObject::tr("Veuillez remplir tous les champs et entrer une date valide !"), QMessageBox::Cancel);
+        // Vérifier la validité des champs
+        if (nom.isEmpty() || prenom.isEmpty() || poste.isEmpty() || status.isEmpty() || role.isEmpty()) {
+            QMessageBox::critical(this, "Erreur", "Veuillez remplir tous les champs !");
             return;
         }
 
-        // Update employee
+        if (!dateE.isValid() || dateE.date().isNull()) {
+            QMessageBox::critical(this, "Erreur", "Veuillez entrer une date valide !");
+            return;
+        }
+
+        // Vérification de la date avec debug
+        qDebug() << "Date sélectionnée :" << dateE.toString("yyyy-MM-dd HH:mm:ss");
+
+        // Modification de l'employé
         bool test = emp.modifier(id, nom, prenom, poste, salaire, status, adresse, role, dateE);
 
         if (test) {
-            ui->tab_employee1->setModel(emp.afficher()); // Refresh table
-            QMessageBox::information(nullptr, QObject::tr("OK"),
-                                     QObject::tr("Modification effectuée"), QMessageBox::Ok);
+            ui->tab_employee1->setModel(emp.afficher()); // Rafraîchir la table
+            QMessageBox::information(this, "Succès", "Modification effectuée !");
         } else {
-            QMessageBox::critical(nullptr, QObject::tr("Not OK"),
-                                  QObject::tr("Modification non effectuée"), QMessageBox::Cancel);
+            QMessageBox::critical(this, "Erreur", "Modification non effectuée !");
         }
     }
 }
+/*
 
+/*void MainWindow::on_pushButton_modifier_clicked()
+{
+    // Récupérer l'ID de l'employé depuis le champ de texte
+    int id = ui->le_modif_id_emp->text().toInt();
+
+    if (id <= 0) {
+        QMessageBox::critical(this, "Erreur de validation", "Veuillez saisir un ID valide pour l'employé.");
+        return;
+    }
+
+    // Vérifier si l'ID existe dans la base de données
+    QSqlQuery checkQuery;
+    checkQuery.prepare("SELECT COUNT(*) FROM EMPLOYE WHERE ID_EMPLOYE = :id");
+    checkQuery.bindValue(":id", id);
+    if (!checkQuery.exec()) {
+        QMessageBox::critical(this, "Erreur", "Échec lors de la vérification de l'ID : " + checkQuery.lastError().text());
+        return;
+    }
+
+    checkQuery.next();
+    if (checkQuery.value(0).toInt() == 0) {
+        QMessageBox::critical(this, "Erreur", "L'ID spécifié n'existe pas dans la base de données.");
+        return;
+    }
+
+    // Créer un objet Employe pour récupérer les informations actuelles de l'employé
+    employee1 emp;
+    emp.chargerDonnees(id); // Appeler la méthode chargerDonnees pour charger les informations
+
+    // Remplir les champs de modification avec les données actuelles de l'employé
+    ui->le_modif_nom->setText(emp.getNom());
+    ui->le_modif_prenom->setText(emp.getPrenom());
+    ui->le_modif_poste->setText(emp.getPoste());
+    ui->le_modif_salaire->setText(QString::number(emp.getSalaire()));
+    ui->le_modif_status->setText(emp.getStatus());
+    ui->le_modif_adresse->setText(emp.getAdresse());
+    ui->le_modif_role->setText(emp.getRole());
+    ui->le_modif_dateE->setDateTime(emp.getDateEmbauche());  // Utiliser setDate au lieu de setDateTime pour une date simple
+
+    // Récupérer les valeurs des champs pour les valider
+    QString name = ui->le_modif_nom->text();
+    QString prenom = ui->le_modif_prenom->text();
+    QString poste = ui->le_modif_poste->text();
+    QString salaireStr = ui->le_modif_salaire->text();
+    QString status = ui->le_modif_status->text();
+    QString adresse = ui->le_modif_adresse->text();
+    QString role = ui->le_modif_role->text();
+    QDate dateEmbauche = ui->le_modif_dateE->date();
+
+    // Validation des champs
+    QRegularExpression regexName("^[a-zA-Z\\s]+$");
+    if (!regexName.match(name).hasMatch()) {
+        QMessageBox::critical(this, "Erreur de validation", "Le nom doit contenir uniquement des lettres et des espaces.");
+        return;
+    }
+
+    QRegularExpression regexPoste("^[a-zA-Z\\s]+$");
+    if (!regexPoste.match(poste).hasMatch()) {
+        QMessageBox::critical(this, "Erreur de validation", "Le poste doit contenir uniquement des lettres et des espaces.");
+        return;
+    }
+
+    QRegularExpression regexNumber("^[0-9]+(\\.[0-9]+)?$");
+    if (!regexNumber.match(salaireStr).hasMatch()) {
+        QMessageBox::critical(this, "Erreur de validation", "Le salaire doit être un nombre valide.");
+        return;
+    }
+
+    double salaire = salaireStr.toDouble();
+    if (salaire <= 0) {
+        QMessageBox::critical(this, "Erreur de validation", "Le salaire doit être un nombre supérieur à zéro.");
+        return;
+    }
+
+    // Mise à jour des informations de l'employé dans la base de données
+    QSqlQuery query;
+    query.prepare("UPDATE EMPLOYE SET NOM = :NOM, PRENOM = :PRENOM, POSTE = :POSTE, "
+                  "SALAIRE = :SALAIRE, STATUS = :STATUS, ADRESSE = :ADRESSE, ROLE = :ROLE, "
+                  "DATE_E = :DATE_E WHERE ID_EMPLOYE = :ID_EMPLOYE");
+
+    // Lier les valeurs aux paramètres dans la requête
+    query.bindValue(":NOM", name);
+    query.bindValue(":PRENOM", prenom);
+    query.bindValue(":POSTE", poste);
+    query.bindValue(":SALAIRE", salaire);
+    query.bindValue(":STATUS", status);
+    query.bindValue(":ADRESSE", adresse);
+    query.bindValue(":ROLE", role);
+    query.bindValue(":DATE_E", dateEmbauche.toString("yyyy-MM-dd")); // Date formatée au format 'YYYY-MM-DD'
+    query.bindValue(":ID_EMPLOYE", id);
+
+    // Exécuter la requête et vérifier si elle a réussi
+    if (query.exec()) {
+        QMessageBox::information(this, "Succès", "L'employé a été mis à jour avec succès!");
+        ui->tab_employee1->setModel(employee1().afficher()); // Mettre à jour la vue
+    } else {
+        QMessageBox::critical(this, "Erreur", "Échec de la mise à jour : " + query.lastError().text());
+
+    }
+}
+
+*/
+void MainWindow::on_pushButton_modifier_clicked()
+{
+    int id = ui->le_modif_id_emp->text().toInt();
+
+    if (id <= 0) {
+        QMessageBox::warning(this, "Erreur", "ID invalide !");
+        return;
+    }
+
+    // Chercher l'employé avec l'ID
+    employee1 emp = employee1::chercherParId(id);
+
+    if (emp.getId() == 0) {
+        QMessageBox::warning(this, "Employé introuvable", "Aucun employé trouvé avec cet ID !");
+        return;
+    }
+
+    // Remplir les champs avec les données existantes
+    ui->le_modif_nom->setText(emp.getNom());
+    ui->le_modif_prenom->setText(emp.getPrenom());
+    ui->le_modif_poste->setText(emp.getPoste());
+    ui->le_modif_salaire->setText(QString::number(emp.getSalaire()));
+    ui->le_modif_status->setText(emp.getStatus());
+    ui->le_modif_adresse->setText(emp.getAdresse());
+    ui->le_modif_role->setText(emp.getRole());
+    ui->le_modif_dateE->setDateTime(emp.getDateEmbauche());
+
+    // Demande de confirmation pour modifier l'employé
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirmer", "Voulez-vous modifier cet employé ?", QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        // Récupérer les nouvelles valeurs
+        QString nom = ui->le_modif_nom->text();
+        QString prenom = ui->le_modif_prenom->text();
+        QString poste = ui->le_modif_poste->text();
+        double salaire = ui->le_modif_salaire->text().toDouble();
+        QString status = ui->le_modif_status->text();
+        QString adresse = ui->le_modif_adresse->text();
+        QString role = ui->le_modif_role->text();
+        QDateTime dateE = ui->le_modif_dateE->dateTime();
+
+        // Vérifier que tous les champs sont remplis
+        if (nom.isEmpty() || prenom.isEmpty() || poste.isEmpty() || status.isEmpty() || role.isEmpty()) {
+            QMessageBox::critical(this, "Erreur", "Veuillez remplir tous les champs !");
+            return;
+        }
+
+        if (!dateE.isValid() || dateE.date().isNull()) {
+            QMessageBox::critical(this, "Erreur", "Veuillez entrer une date valide !");
+            return;
+        }
+
+        // Vérification de la date avec debug
+        qDebug() << "Date sélectionnée :" << dateE.toString("yyyy-MM-dd HH:mm:ss");
+
+        // Modifier l'employé avec les nouvelles valeurs
+        bool test = emp.modifier(id, nom, prenom, poste, salaire, status, adresse, role, dateE);
+
+        if (test) {
+            // Rafraîchir l'affichage de la table avec les nouvelles données
+            ui->tab_employee1->setModel(emp.afficher()); // Rafraîchir la table
+            QMessageBox::information(this, "Succès", "Modification effectuée !");
+        } else {
+            QMessageBox::critical(this, "Erreur", "La modification a échoué !");
+        }
+    }
+}
 
 void MainWindow::on_pushButton_supprimer_clicked()
 {
@@ -214,6 +383,10 @@ void MainWindow::on_pushButton_supprimer_clicked()
     if (id == 0) {
         QMessageBox::critical(nullptr, QObject::tr("Not OK"),
                               QObject::tr("Veuillez entrer un ID valide !\n"), QMessageBox::Cancel);
+        return;
+    }
+    if (id <= 0) {
+        QMessageBox::critical(this, "Erreur", "L'ID doit être un nombre positif.");
         return;
     }
 
@@ -294,3 +467,29 @@ void MainWindow::on_btn_modifier_clicked()
         QMessageBox::critical(this, "Échec", "La modification a échoué. Vérifiez les logs.");
     }
 }
+
+void MainWindow::on_pushButton_rechercher_clicked()
+{
+    connect(ui->pushButton_rechercher, SIGNAL(clicked()), this, SLOT(on_pushButton_rechercher_clicked()));
+            ui->pushButton_rechercher->setEnabled(true);
+            ui->pushButton_rechercher->setFocus();
+    QString nomRecherche = ui->le_recherche->text().trimmed();
+
+    if (nomRecherche.isEmpty()) {
+        QMessageBox::warning(this, "Recherche", "Veuillez entrer un nom à rechercher !");
+        return;
+    }
+
+    qDebug() << "Recherche en cours pour :" << nomRecherche;
+
+    QSqlQueryModel* model = emp.rechercherParNom(nomRecherche);
+
+    if (model && model->rowCount() > 0) {
+        ui->tab_employee1->setModel(model);
+        qDebug() << "Résultats trouvés :" << model->rowCount();
+    } else {
+        QMessageBox::information(this, "Résultat", "Aucun employé trouvé avec ce nom.");
+        qDebug() << "Aucun résultat trouvé.";
+    }
+}
+

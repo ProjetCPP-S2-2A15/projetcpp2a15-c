@@ -124,12 +124,14 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         case 0: _t->on_pushButton_ajouter_clicked(); break;
         case 1: _t->on_pushButton_modifier_clicked(); break;
-        case 2: _t->on_pushButton_ok_clicked(); break;
+        //case 2: _t->on_pushButton_ok_clicked(); break;
         case 3: _t->on_pushButton_supprimer_clicked(); break;
         case 4: _t->on_pushButton_annuler_clicked(); break;
         case 5: _t->on_pushButton_annuler_2_clicked(); break;
         case 6: _t->on_pushButton_annuler_3_clicked(); break;
-        case 7: _t->on_btn_modifier_clicked(); break;
+        case 7: _t->on_pushButton_rechercher_clicked(); break;
+       // case 7: _t->on_btn_modifier_clicked(); break;
+       // case 8: _t->on_pushButton_rechercher_clicked(); break;
         default: ;
         }
     }

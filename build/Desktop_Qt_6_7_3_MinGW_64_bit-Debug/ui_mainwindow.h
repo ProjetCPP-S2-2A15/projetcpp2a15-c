@@ -116,9 +116,9 @@ public:
     QComboBox *rid;
     QLabel *label_11;
     QPushButton *pushButton_noti;
-    QLineEdit *Psearch_5;
+    QLineEdit *le_recherche;
     QLabel *label_12;
-    QPushButton *pushButton_telecharger_3;
+    QPushButton *pushButton_rechercher;
     QTableWidget *tableWidget_2;
     QTableView *tab_employee1;
     QFrame *footer;
@@ -833,10 +833,10 @@ public:
         pushButton_noti->setStyleSheet(QString::fromUtf8("border: none;\n"
 "image: url(:/resources/notification.png);\n"
 "background: transparent;"));
-        Psearch_5 = new QLineEdit(main_body_contents);
-        Psearch_5->setObjectName("Psearch_5");
-        Psearch_5->setGeometry(QRect(630, 200, 181, 22));
-        Psearch_5->setStyleSheet(QString::fromUtf8("QLineEdit{\n"
+        le_recherche = new QLineEdit(main_body_contents);
+        le_recherche->setObjectName("le_recherche");
+        le_recherche->setGeometry(QRect(630, 200, 181, 22));
+        le_recherche->setStyleSheet(QString::fromUtf8("QLineEdit{\n"
 "    background-color: white;\n"
 "    box-shadow: 2px 0.5px 5px 1px inset black;\n"
 "    border-radius: 5px;\n"
@@ -858,10 +858,10 @@ public:
         label_12->setObjectName("label_12");
         label_12->setGeometry(QRect(520, 200, 111, 21));
         label_12->setFont(font);
-        pushButton_telecharger_3 = new QPushButton(main_body_contents);
-        pushButton_telecharger_3->setObjectName("pushButton_telecharger_3");
-        pushButton_telecharger_3->setGeometry(QRect(820, 200, 61, 21));
-        pushButton_telecharger_3->setStyleSheet(QString::fromUtf8("padding: 1px;\n"
+        pushButton_rechercher = new QPushButton(main_body_contents);
+        pushButton_rechercher->setObjectName("pushButton_rechercher");
+        pushButton_rechercher->setGeometry(QRect(820, 200, 61, 21));
+        pushButton_rechercher->setStyleSheet(QString::fromUtf8("padding: 1px;\n"
 "border-style: solid;\n"
 "border: 2px solid #eae2b7;\n"
 "border-radius: 8px;\n"
@@ -1262,7 +1262,7 @@ public:
         label_11->setText(QCoreApplication::translate("MainWindow", "Trier par :", nullptr));
         pushButton_noti->setText(QString());
         label_12->setText(QCoreApplication::translate("MainWindow", "Rechercher :", nullptr));
-        pushButton_telecharger_3->setText(QCoreApplication::translate("MainWindow", "Valider", nullptr));
+        pushButton_rechercher->setText(QCoreApplication::translate("MainWindow", "Valider", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "Modern UI v 7.7.7", nullptr));
         pushButton_7->setText(QString());
         label_2->setText(QCoreApplication::translate("MainWindow", "LUXBRAND", nullptr));
