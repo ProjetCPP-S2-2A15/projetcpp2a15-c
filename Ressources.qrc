@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/x.svg</file>
+        <file>icons/external-link.svg</file>
+        <file>icons/search.svg</file>
+        <file>icons/bell.svg</file>
+        <file>icons/user.svg</file>
+        <file>icons/align-left.svg</file>
+        <file>icons/box.svg</file>
+        <file>icons/arrow-down-left.svg</file>
+        <file>icons/maximize-2.svg</file>
+        <file>images/Capture_2025.png</file>
+    </qresource>
+</RCC>
