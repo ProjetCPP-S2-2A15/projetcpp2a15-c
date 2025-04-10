@@ -1,0 +1,10 @@
+release/employee1.o
+release/local.o
+release/loginwindow.o
+release/main.o
+release/mainwindow.o
+release/connection.o
+release/statistique.o
+release/qrc_images.o
+release/moc_loginwindow.o
+release/moc_mainwindow.o
