@@ -1023,7 +1023,7 @@ public:
 "color: rgb(86, 1, 38);"));
         page = new QWidget();
         page->setObjectName("page");
-        page->setGeometry(QRect(0, 0, 191, 506));
+        page->setGeometry(QRect(0, 0, 191, 550));
         verticalLayout_8 = new QVBoxLayout(page);
         verticalLayout_8->setObjectName("verticalLayout_8");
         frame_10 = new QFrame(page);
@@ -1070,7 +1070,7 @@ public:
         toolBox->addItem(page, icon8, QString::fromUtf8("Menu 1"));
         page_2 = new QWidget();
         page_2->setObjectName("page_2");
-        page_2->setGeometry(QRect(0, 0, 172, 523));
+        page_2->setGeometry(QRect(0, 0, 172, 567));
         verticalLayout_10 = new QVBoxLayout(page_2);
         verticalLayout_10->setObjectName("verticalLayout_10");
         frame_11 = new QFrame(page_2);

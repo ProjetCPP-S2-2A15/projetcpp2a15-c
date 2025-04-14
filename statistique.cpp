@@ -24,7 +24,7 @@ QMap<QString, QPair<double, double>> Statistique::salairePoste()
         {"Responsable locaux comerciaux", {3000, 6000}},
         {"Responsable Employees", {2200, 4500}},
         {"Technicien", {1500, 3500}},
-        {"Agent de Sécurité", {1200, 3000}}
+        {"Agent de sécurité", {1200, 3000}}
     };
 
     return salairePoste;

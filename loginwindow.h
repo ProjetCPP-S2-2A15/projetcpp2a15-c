@@ -1,10 +1,12 @@
 #ifndef LOGINWINDOW_H
 #define LOGINWINDOW_H
+
 #include <QWidget>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QProcess>
 
-class loginwindow: public QWidget {
+class loginwindow : public QWidget {
     Q_OBJECT
 
 public:
@@ -13,9 +15,13 @@ public:
 private:
     QLineEdit *emailInput;
     QLineEdit *passwordInput;
+    QPushButton *forgotButton;
+
+    int loginAttempts; // compteur d'essais
 
 private slots:
-    void checkLogin(); // À définir plus tard
+    void checkLogin();             // Vérification normale
+    void handleFaceRecognition();  // En cas d'échec
 };
 
 #endif // LOGINWINDOW_H

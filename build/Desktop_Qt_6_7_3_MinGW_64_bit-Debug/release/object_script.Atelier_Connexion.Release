@@ -4,7 +4,9 @@ release/loginwindow.o
 release/main.o
 release/mainwindow.o
 release/connection.o
+release/registerwindow.o
 release/statistique.o
 release/qrc_images.o
 release/moc_loginwindow.o
 release/moc_mainwindow.o
+release/moc_registerwindow.o

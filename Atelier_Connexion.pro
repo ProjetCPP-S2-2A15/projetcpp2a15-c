@@ -32,6 +32,7 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     connection.cpp \
+    registerwindow.cpp \
     statistique.cpp
 
 HEADERS += \
@@ -40,6 +41,7 @@ HEADERS += \
     loginwindow.h \
         mainwindow.h \
     connection.h \
+    registerwindow.h \
     statistique.h
 
 FORMS += \

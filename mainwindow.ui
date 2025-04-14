@@ -1944,7 +1944,7 @@ color: rgb(86, 1, 38);</string>
                   <x>0</x>
                   <y>0</y>
                   <width>191</width>
-                  <height>506</height>
+                  <height>550</height>
                  </rect>
                 </property>
                 <attribute name="icon">
@@ -2018,7 +2018,7 @@ color: rgb(86, 1, 38);</string>
                   <x>0</x>
                   <y>0</y>
                   <width>172</width>
-                  <height>523</height>
+                  <height>567</height>
                  </rect>
                 </property>
                 <attribute name="icon">
