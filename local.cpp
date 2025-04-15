@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QString>
+#include <QSqlTableModel>
 #include "connection.h"
 
 // Constructeurs
@@ -75,7 +76,7 @@ bool Local::modifier(long long id) {
 
     // Lier les valeurs aux paramètres de la requête
     query.bindValue(":ID_LOCAL", res); // ID du local à modifier
-    query.bindValue(":SURFACE", this->surface);  // Utiliser les valeurs de l'objet `Local`
+    query.bindValue(":SURFACE", this->surface);  // Utiliser les valeurs de l'objet Local
     query.bindValue(":TYPE", this->type);
     query.bindValue(":DISPONIBILITE", this->disponibilite);
     query.bindValue(":PRIX", this->prix);
@@ -114,3 +115,38 @@ QSqlQueryModel* Local::afficher()
     return model;
 }
 
+
+QSqlQueryModel* Local::trier()
+{
+    QSqlQueryModel* model = new QSqlQueryModel;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM fatma.local_commerciale ORDER BY PRIX ASC");  // Trier par prix
+
+    if (!query.exec()) {
+        qDebug() << "Erreur lors du tri des locaux : " << query.lastError().text();
+        return nullptr;
+    }
+
+    model->setQuery(query);
+    return model;
+}
+
+QSqlQueryModel* Local::rechercherParDisponibilite(const QString& disponibilite)
+{
+    QSqlQueryModel* model =
+        new QSqlQueryModel;
+    QSqlQuery query;
+
+    query.prepare("SELECT ID_LOCAL, SURFACE, TYPE, DISPONIBILITE, PRIX, ETAGE FROM fatma.local_commerciale WHERE DISPONIBILITE = :DISPONIBILITE");
+    query.bindValue(":DISPONIBILITE", disponibilite);
+
+    if (query.exec()) {
+        model->setQuery(query);
+        qDebug() << "✅ Recherche par disponibilité effectuée avec succès !";
+    } else {
+        qDebug() << "❌ Erreur SQL lors de la recherche par disponibilité :" << query.lastError().text();
+    }
+
+    return model;
+}

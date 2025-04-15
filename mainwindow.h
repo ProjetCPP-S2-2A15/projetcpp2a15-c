@@ -3,7 +3,19 @@
 #include "connection.h"
 #include <QMainWindow>
 #include "local.h" // Inclure la classe Local
-
+#include <QPrinter>
+#include <QPrintPreviewDialog>
+#include <QPainter>
+#include <QTableView>
+#include <QSqlQueryModel>
+#include <QFileDialog>
+#include <QTextDocument>
+#include<QtCharts>
+#include <QChartView>
+#include <QPageSize>  // Inclure ce header pour utiliser QPageSize::A4
+#include <QLabel>
+#include <QVector>
+#include <QVariant>
 namespace Ui {
 class MainWindow;
 }
@@ -22,11 +34,25 @@ private slots:
     void on_pushButton_supprimer_clicked();
     void on_pushButton_modifier_clicked();
     void mettreAJourAffichage();
+    void on_pushButton_18_clicked();
+    void rechercherLocaux();
+    void on_pushButton_telecharger_clicked();
+    void on_pushButton_statistique_clicked();
+    void on_pushButton_envoyer_clicked();
+    void on_pushButton_clear_clicked();
+    void on_pushButton_11_clicked();
+    void jeuDevineNombre();
+    void verifierCaptchaEtLancerJeu() ;
+    void pushButton_20_clicked();
 
 
 private:
     Ui::MainWindow *ui;
     Local local; // Instance de la classe Local
+signals:
+    void setCenter(QVariant lat, QVariant lng);
+    void setCenterWithZoom(QVariant lat, QVariant lng, QVariant zoom);
+    void addMarker(QVariant lat, QVariant lng);
 };
 
 #endif // MAINWINDOW_H

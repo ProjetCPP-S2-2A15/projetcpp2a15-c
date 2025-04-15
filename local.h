@@ -3,6 +3,7 @@
 #include <QString>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
+#include <QSqlTableModel>
 #include "connection.h"
 class Local
 {
@@ -19,7 +20,6 @@ public:
     Local();
     Local( double, QString, QString, double, QString);
     Local(long long ,double, QString, QString, double, QString);
-
     // Getters & Setters
     long long getId() const { return id; }
     double getSurface() const { return surface; }
@@ -39,6 +39,9 @@ public:
     bool modifier(long long id);
     bool supprimer(long long id);
     QSqlQueryModel* afficher();
+    QSqlQueryModel* trier();
+    QSqlQueryModel* rechercherParDisponibilite(const QString& disponibilite);
+
 };
 
 #endif // LOCAL_H
