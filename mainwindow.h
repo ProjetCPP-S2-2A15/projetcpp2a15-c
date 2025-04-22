@@ -59,6 +59,8 @@ void on_pushButton_crud_2_clicked();
 
 void on_actualiser_clicked();
 
+void on_pushButton_exp_clicked();
+
 private:
     Ui::MainWindow *ui;
     Services s;

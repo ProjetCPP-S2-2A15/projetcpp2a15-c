@@ -16,19 +16,19 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->stackedWidget->setCurrentWidget(ui->page_3); // Affiche la page CRUD au démarrage
+    ui->stackedWidget->setCurrentWidget(ui->page_3);
     ui->tab_Services->setModel(s.afficher());
 
 
-    // Crée un panneau de notifications
+
     notificationPanel = new NotificationPanel(this);
     ui->verticalLayout_12->addWidget(notificationPanel);
 
-    // Exemple : appel de la fonction pour vérifier les services
+
     checkServiceStatus();
 
 
-    // 👉 Ajoute ton QDoubleValidator ici :
+
     QDoubleValidator *prixValidator = new QDoubleValidator(0, 999999.99, 2, this);
     prixValidator->setNotation(QDoubleValidator::StandardNotation);
     ui->le_prix->setValidator(prixValidator);
@@ -36,10 +36,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
-// Méthode pour vérifier les services et ajouter des notifications
 void MainWindow::checkServiceStatus()
 {
-    // Effacer les notifications précédentes avant d'ajouter les nouvelles
+
     notificationPanel->clearNotifications();
 
     // Récupérer tous les services de la base de données
@@ -65,22 +64,11 @@ void MainWindow::checkServiceStatus()
     }
 }
 
-
-
-
-
-
-
-
 MainWindow::~MainWindow()
 {
     delete ui;
 
 }
-
-
-
-
 
 void MainWindow::on_pushButton_ajouter_clicked()
 {
@@ -96,7 +84,6 @@ void MainWindow::on_pushButton_ajouter_clicked()
     bool prixOk;
     double prix = prixStr.toDouble(&prixOk);
 
-    // Contrôle des champs
     if (id == 0 || nom.isEmpty() || description.isEmpty() || statut.isEmpty() || type.isEmpty()) {
         QMessageBox::warning(this, "Champs manquants", "Veuillez remplir tous les champs !");
         return;
@@ -246,11 +233,10 @@ void MainWindow::on_pb_rechercher_clicked()
 
 void MainWindow::on_pushButton_annuler_search_clicked()
 {
-    // Vider le champ de recherche
     ui->le_recherche->clear();
 
-    // Restaurer l'affichage initial du tableau avec toutes les données
-    ui->tab_Services->setModel(s.afficher());  // Cela suppose que 's' est l'objet qui gère les services et que la méthode afficher() retourne le modèle de la table complet
+
+    ui->tab_Services->setModel(s.afficher());
 }
 
 
@@ -403,11 +389,11 @@ void MainWindow::on_pushButton_crud_2_clicked()
 
 void MainWindow::on_actualiser_clicked()
 {
-    // Effacer les notifications précédentes
+
     notificationPanel->clearNotifications();
 
-    // Re-vérifier les services pour ajouter les nouvelles notifications
-    checkServiceStatus();  // Appel de la fonction pour vérifier et ajouter les notifications
+
+    checkServiceStatus();
 }
 
 void MainWindow::ajouterHistorique(const QString &operation)
@@ -418,3 +404,42 @@ void MainWindow::ajouterHistorique(const QString &operation)
     ui->listWidgetHistorique->scrollToBottom();  // Pour voir la dernière action
 }
 
+
+void MainWindow::on_pushButton_exp_clicked()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, "Enregistrer l'historique", "", "PDF Files (*.pdf)");
+
+    if (filePath.isEmpty())
+        return;
+
+    QPdfWriter pdfWriter(filePath);
+    pdfWriter.setPageSize(QPageSize(QPageSize::A4));
+    pdfWriter.setResolution(300);
+
+    QPainter painter(&pdfWriter);
+    QFont font("Arial", 10);
+    painter.setFont(font);
+
+    int x = 50;
+    int y = 50;
+    int lineHeight = 25;
+
+    painter.drawText(x, y, "Historique des opérations :");
+    y += 2 * lineHeight;
+
+    for (int i = 0; i < ui->listWidgetHistorique->count(); ++i) {
+        QString line = ui->listWidgetHistorique->item(i)->text();
+        painter.drawText(x, y, line);
+        y += lineHeight;
+
+        // Nouvelle page si on dépasse la hauteur
+        if (y > pdfWriter.height() - 50) {
+            pdfWriter.newPage();
+            y = 50;
+        }
+    }
+
+    painter.end();
+
+    QMessageBox::information(this, "Exportation réussie", "L'historique a été exporté en PDF !");
+}

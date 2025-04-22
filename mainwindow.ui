@@ -456,7 +456,7 @@ font: 900 italic 10pt &quot;Segoe UI&quot;;</string>
 background-color: #f5f2db;</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_3">
        <widget class="QFrame" name="main_body">
@@ -2254,7 +2254,7 @@ color: rgb(86, 1, 38);</string>
          </iconset>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_modify">
+       <widget class="QPushButton" name="pushButton_exp">
         <property name="geometry">
          <rect>
           <x>200</x>
@@ -2267,7 +2267,7 @@ color: rgb(86, 1, 38);</string>
          <string notr="true">background-color: rgb(245, 242, 219);</string>
         </property>
         <property name="text">
-         <string>Modifier</string>
+         <string>exp</string>
         </property>
         <property name="icon">
          <iconset>
