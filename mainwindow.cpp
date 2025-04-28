@@ -58,6 +58,18 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(setCenterWithZoom(QVariant, QVariant, QVariant)),
             obj, SLOT(setCenter(QVariant, QVariant, QVariant)));
 
+    // Connecter le bouton "scanner" (connecter)
+    connect(ui->connecter, &QPushButton::clicked, this, &MainWindow::on_connecter_clicked);
+
+    // Ouvrir la connexion à l'Arduino
+    int result = A.connect_arduino();
+    if (result == 0) {
+        qDebug() << "Arduino connecté avec succès.";
+    } else if (result == 1) {
+        qDebug() << "⚠️ Arduino détecté mais port non ouvert.";
+    } else {
+        qDebug() << "❌ Arduino non détecté !";
+    }
 }
 
 MainWindow::~MainWindow()
@@ -213,7 +225,7 @@ void MainWindow::on_pushButton_telecharger_clicked()
 
     QPdfWriter pdfWriter(filePath);
     pdfWriter.setPageSize(QPageSize::A4);
-    pdfWriter.setTitle("Fournisseurs List");
+    pdfWriter.setTitle("locaux List");
 
     QPainter painter(&pdfWriter);
     int yPos = 1000;  // Initial vertical position
@@ -434,6 +446,82 @@ void MainWindow::pushButton_20_clicked()
     emit addMarker(lat, lng);
 
     // Si vous avez ajouté setCenterWithZoom :
-     emit setCenterWithZoom(lat, lng, 16);
+    emit setCenterWithZoom(lat, lng, 16);
+}
+// [Le reste du fichier reste inchangé jusqu'à on_connecter_clicked]
+
+void MainWindow::on_connecter_clicked()
+{
+    QString rfid = ui->textEdit_uid->text().trimmed(); // Récupérer l'UID saisi
+
+    if (rfid.isEmpty()) {
+        QMessageBox::warning(this, "Erreur", "Veuillez entrer un UID.");
+        return;
+    }
+
+    // Traiter l'UID saisi
+    handleSerialData(rfid);
 }
 
+void MainWindow::handleSerialData(QString rfid)
+{
+    qDebug() << "RFID à traiter :" << rfid;
+
+    if (rfid.isEmpty()) {
+        qDebug() << "Données vides ignorées.";
+        if (A.getserial()->isOpen()) {
+            A.write_to_arduino("0|Erreur|Erreur\n");
+            qDebug() << "Envoi à l'Arduino : 0|Erreur|Erreur";
+        }
+        return;
+    }
+
+    QSqlQuery query;
+    query.prepare("SELECT NOM, PRENOM FROM FATMA.EMPLOYE WHERE RFID = :rfid");
+    query.bindValue(":rfid", rfid);
+
+    if (!query.exec()) {
+        qDebug() << "Erreur SQL :" << query.lastError().text();
+        if (A.getserial()->isOpen()) {
+            A.write_to_arduino("0|Erreur|SQL\n");
+            qDebug() << "Envoi à l'Arduino : 0|Erreur|SQL";
+        }
+        return;
+    }
+
+    if (query.next()) {
+        QString nom = query.value("NOM").toString();
+        QString prenom = query.value("PRENOM").toString();
+
+        if (rfid == "A3478F28" || rfid == "E941054B") {
+            if (A.getserial()->isOpen()) {
+                A.write_to_arduino(("1|" + nom + "|" + prenom + "\n").toUtf8());
+                qDebug() << "Envoi à l'Arduino : 1|" << nom << "|" << prenom;
+            } else {
+                qDebug() << "Erreur : Port série non ouvert, impossible d'envoyer à l'Arduino.";
+            }
+        } else if (rfid == "718AA97B") {
+            if (A.getserial()->isOpen()) {
+                A.write_to_arduino(("0|" + nom + "|" + prenom + "\n").toUtf8());
+                qDebug() << "Envoi à l'Arduino : 0|" << nom << "|" << prenom;
+            } else {
+                qDebug() << "Erreur : Port série non ouvert, impossible d'envoyer à l'Arduino.";
+            }
+        } else {
+            if (A.getserial()->isOpen()) {
+                A.write_to_arduino(("0|" + nom + "|" + prenom + "\n").toUtf8());
+                qDebug() << "Envoi à l'Arduino : 0|" << nom << "|" << prenom;
+            } else {
+                qDebug() << "Erreur : Port série non ouvert, impossible d'envoyer à l'Arduino.";
+            }
+        }
+
+    } else {
+        if (A.getserial()->isOpen()) {
+            A.write_to_arduino("0|Inconnu|Inconnu\n");
+            qDebug() << "Envoi à l'Arduino : 0|Inconnu|Inconnu";
+        } else {
+            qDebug() << "Erreur : Port série non ouvert, impossible d'envoyer à l'Arduino.";
+        }
+    }
+}

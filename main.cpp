@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QMessageBox>
+#include <QSerialPort>
 #include "connection.h"
+#include "arduinowidget.h"
 #include "local.h"
 int main(int argc, char *argv[])
 {
@@ -14,6 +16,15 @@ int main(int argc, char *argv[])
         QMessageBox::information(nullptr, QObject::tr("database is open"),
                                  QObject::tr("connection successful.\n"
                                              "Click Cancel to exit."), QMessageBox::Cancel);
+        // Création de la fenêtre ArduinoWidget
+        ArduinoWidget w;
+        w.setWindowTitle("📡 Interface Arduino RFID");
+        w.resize(400, 300);
+        w.show();  // Affichage de la fenêtre Arduino
+
+        return a.exec(); // Exécution de l'application principale
+
+
 
     }
     else

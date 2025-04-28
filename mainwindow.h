@@ -16,6 +16,8 @@
 #include <QLabel>
 #include <QVector>
 #include <QVariant>
+#include "arduino.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -45,10 +47,15 @@ private slots:
     void verifierCaptchaEtLancerJeu() ;
     void pushButton_20_clicked();
 
+    void on_connecter_clicked();
+    void handleSerialData(QString rfid); // Slot pour le bouton "connecter"
 
 private:
     Ui::MainWindow *ui;
     Local local; // Instance de la classe Local
+     Arduino A;
+    QString enteredNom;    // Pour stocker le nom saisi
+    QString enteredPrenom; // Pour stocker le prénom saisi
 signals:
     void setCenter(QVariant lat, QVariant lng);
     void setCenterWithZoom(QVariant lat, QVariant lng, QVariant zoom);
