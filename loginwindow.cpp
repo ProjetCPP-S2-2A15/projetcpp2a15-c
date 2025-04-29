@@ -100,7 +100,7 @@ void loginwindow::checkLogin() {
     QString password = passwordInput->text();
 
     QSqlQuery query;
-    query.prepare("SELECT * FROM AUTHENTIFICATION WHERE EMAIL = :email AND PASSWORD = :password");
+    query.prepare("SELECT * FROM employe WHERE email = :email AND password = :password");
     query.bindValue(":email", email);
     query.bindValue(":password", password);
 
@@ -118,6 +118,7 @@ void loginwindow::checkLogin() {
         }
     }
 }
+
 void loginwindow::handleFaceRecognition() {
     // Chemin vers python.exe (modifié)
     QString pythonPath = "C:\\Program Files\\Python313\\python.exe";  // Met à jour ce chemin si nécessaire

@@ -89,15 +89,16 @@ void RegisterWindow::createAccount(const QString &email, const QString &password
     // Étape 1 : Hasher le mot de passe
     QByteArray hash = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
 
-    // Étape 2 : Insérer dans la table AUTHENTIFICATION sans spécifier ID_AUTH
-    query.prepare("INSERT INTO AUTHENTIFICATION (EMAIL, PASSWORD) "
+    // Étape 2 : Insérer dans la table EMPLOYE sans spécifier ID_EMPLOYE (car il est auto-incrémenté)
+    query.prepare("INSERT INTO employe (email, password) "
                   "VALUES (:email, :password)");
     query.bindValue(":email", email);
     query.bindValue(":password", hash.toHex());
 
+
     if (!query.exec()) {
         db.rollback();
-        QMessageBox::critical(this, "Erreur", "Échec de l'insertion dans AUTHENTIFICATION : " + query.lastError().text());
+        QMessageBox::critical(this, "Erreur", "Échec de l'insertion dans EMPLOYE : " + query.lastError().text());
         return;
     }
 
@@ -107,6 +108,6 @@ void RegisterWindow::createAccount(const QString &email, const QString &password
         return;
     }
 
-    QMessageBox::information(this, "Succès", "Compte créé avec succès !");
+    QMessageBox::information(this, "Succès", "Compte employé créé avec succès !");
     this->close();
 }

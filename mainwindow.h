@@ -5,6 +5,8 @@
 #include "employee1.h"
 #include "statistique.h"
 #include <QTableWidgetItem>
+#include "arduino.h"
+
 
 
 
@@ -39,7 +41,8 @@ private slots:
     void on_pushButton_stat_clicked();
     //void mettreAJourRole(const QString &poste);
     //void controleSaisie();
-    void mettreAJourGraphique();
+    //void mettreAJourGraphique();
+    void handleSerialData();
 
 
 
@@ -53,6 +56,8 @@ private:
     Ui::MainWindow *ui;
     employee1 emp;
    Statistique *stat;
+    Arduino A;
+
 
 };
 #endif // MAINWINDOW_H

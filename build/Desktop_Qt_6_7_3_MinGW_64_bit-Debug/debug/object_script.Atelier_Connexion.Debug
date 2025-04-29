@@ -1,3 +1,5 @@
+debug/arduino.o
+debug/arduinowidget.o
 debug/employee1.o
 debug/local.o
 debug/loginwindow.o
@@ -7,6 +9,7 @@ debug/connection.o
 debug/registerwindow.o
 debug/statistique.o
 debug/qrc_images.o
+debug/moc_arduinowidget.o
 debug/moc_loginwindow.o
 debug/moc_mainwindow.o
 debug/moc_registerwindow.o

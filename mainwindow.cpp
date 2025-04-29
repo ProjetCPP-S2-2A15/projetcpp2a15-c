@@ -34,6 +34,8 @@ stat(new Statistique())
     connect(ui->le_recherche, &QLineEdit::textChanged, this, &MainWindow::on_le_recherche_textChanged);
     connect(ui->pushButton_rechercher, &QPushButton::clicked, this, &MainWindow::on_pushButton_rechercher_clicked);
     connect(ui->pushButton_stat, &QPushButton::clicked, this, &MainWindow::on_pushButton_stat_clicked);
+    connect(A.getserial(), SIGNAL(readyRead()), this, SLOT(handleSerialData()));
+
 
 
 }
@@ -582,5 +584,15 @@ void MainWindow::on_pushButton_stat_clicked()
     ui->graphicsView->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
+void MainWindow::handleSerialData()
+{
+    QByteArray data = A.read_from_arduino(); // A = ton objet de classe Arduino
+    QString rfid = QString(data).trimmed();  // Nettoyer les retours à la ligne
+
+    qDebug() << "RFID reçu :" << rfid;
+
+    QByteArray result = A.cherchercode(rfid); // interro Oracle
+    A.write_to_arduino(result + "\n"); // envoyer "1\n" ou "0\n"
+}
 
 

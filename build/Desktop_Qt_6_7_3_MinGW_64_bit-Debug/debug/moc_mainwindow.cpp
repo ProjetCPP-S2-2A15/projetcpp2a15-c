@@ -52,7 +52,7 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "on_pushButton_telecharger_2_clicked",
     "onAjouterEmploye",
     "on_pushButton_stat_clicked",
-    "mettreAJourGraphique"
+    "handleSerialData"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -147,7 +147,7 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_pushButton_stat_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'mettreAJourGraphique'
+        // method 'handleSerialData'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -159,7 +159,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         auto *_t = static_cast<MainWindow *>(_o);
         (void)_t;
         switch (_id) {
-
+        //case 0: _t->mettreAJourStatistiques(); break;
         case 1: _t->on_pushButton_ajouter_clicked(); break;
         case 2: _t->on_pushButton_modifier_clicked(); break;
         case 3: _t->on_pushButton_ok_clicked(); break;
@@ -173,7 +173,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 11: _t->on_pushButton_telecharger_2_clicked(); break;
         case 12: _t->onAjouterEmploye(); break;
         case 13: _t->on_pushButton_stat_clicked(); break;
-
+        case 14: _t->handleSerialData(); break;
         default: ;
         }
     }
