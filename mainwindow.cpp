@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     notificationPanel = new NotificationPanel(this);
     ui->verticalLayout_12->addWidget(notificationPanel);
 
+   // arduinoWindow = new Arduino(this);
+    //arduinoWindow->show();
 
     checkServiceStatus();
 
@@ -443,3 +445,4 @@ void MainWindow::on_pushButton_exp_clicked()
 
     QMessageBox::information(this, "Exportation réussie", "L'historique a été exporté en PDF !");
 }
+

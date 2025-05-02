@@ -5,6 +5,7 @@
 #include "services.h"
 #include <QTableWidgetItem>
 #include "NotificationPanel.h" // Assure-toi que le fichier est bien inclus
+#include "arduino.h"
 
 namespace Ui {
 class MainWindow;
@@ -61,10 +62,13 @@ void on_actualiser_clicked();
 
 void on_pushButton_exp_clicked();
 
+
+
 private:
     Ui::MainWindow *ui;
     Services s;
  NotificationPanel *notificationPanel;
+   Arduino *arduinoWindow;
 
 };
 
