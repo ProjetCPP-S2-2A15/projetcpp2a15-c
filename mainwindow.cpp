@@ -67,6 +67,7 @@ bool validerDates(const QDate &debut, const QDate &fin) {
     return true;
 }
 
+
 // Définition des méthodes de MainWindow
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -75,13 +76,15 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Vérification de la connexion à la base de données
     if (!QSqlDatabase::database().isOpen()) {
         QMessageBox::critical(this, "Erreur de connexion", "Impossible de se connecter à la base de données.");
         return;
     }
 
-    qDebug() << "Connexion du bouton ajouter au slot"; // Message de débogage
+    qDebug() << "Connexion du bouton ajouter au slot";
 
+    // Connexions des boutons aux slots
     connect(ui->pushButton_ok, &QPushButton::clicked, this, &MainWindow::on_pushButton_ok_clicked);
     connect(ui->pushButton_modifier, &QPushButton::clicked, this, &MainWindow::on_pushButton_modifier_clicked);
     connect(ui->pushButton_6, &QPushButton::clicked, this, &MainWindow::on_pushButton_6_clicked);
@@ -91,28 +94,68 @@ MainWindow::MainWindow(QWidget *parent)
     // === CONFIGURATION DU CHATBOT ===
     chatbot = new LocalChat(this);
 
-    // Quand le bot envoie une réponse
+    // Réponse du chatbot
     connect(chatbot, &LocalChat::responseReceived, this, [=](const QString &response) {
         ui->chatDisplay->append("🤖 Assistant: " + response);
     });
 
-    // En cas d'erreur dans le bot
+    // Erreur du chatbot
     connect(chatbot, &LocalChat::error, this, [=](const QString &errorMessage) {
         ui->chatDisplay->append("⚠️ Erreur: " + errorMessage);
     });
 
-    // Connexion du bouton d'envoi à la fonction
+    // Envoi d'un message par bouton ou par touche Entrée
     connect(ui->sendChatMessage, &QPushButton::clicked, this, &MainWindow::on_sendChatMessage_clicked);
-
-    // Envoi du message aussi via la touche Entrée
     connect(ui->chatInput, &QLineEdit::returnPressed, ui->sendChatMessage, &QPushButton::click);
 
-    // Interface du chat
+    // Configuration de l'affichage du chat
     ui->chatDisplay->setReadOnly(true);
     chatbot->initialize(); // message d’accueil automatique
 
-    afficherLocataires(); // Affichage des locataires
+    afficherLocataires(); // Affichage initial des locataires
+
+    // === CONFIGURATION PORT SÉRIE ARDUINO ===
+
+
+    arduino = new QSerialPort(this);
+    portname = "COM15"; // ⚠️ Change ce port si nécessaire
+
+    arduino->setPortName(portname);
+    arduino->setBaudRate(QSerialPort::Baud9600);
+    arduino->setDataBits(QSerialPort::Data8);
+    arduino->setParity(QSerialPort::NoParity);
+    arduino->setStopBits(QSerialPort::OneStop);
+    arduino->setFlowControl(QSerialPort::NoFlowControl);
+
+    // Ouverture du port série
+    if (arduino->open(QIODevice::ReadOnly)) {
+        connect(arduino, &QSerialPort::readyRead, this, &MainWindow::on_readyRead);
+        qDebug() << "✅ Port série connecté sur " << portname;
+    } else {
+        QMessageBox::critical(this, "Erreur Port Série", "❌ Impossible d'ouvrir le port " + portname);
+    }
 }
+/*void MainWindow::readSerialData()
+{
+    QByteArray data = arduino->readAll();
+    qDebug() << "🔵 Données reçues : " << data;
+
+    // Exemple : déclenche une alerte si température > 28
+    QString dataStr = QString::fromUtf8(data).trimmed();
+
+    // suppose que les données sont du style "Temp=29"
+    if (dataStr.startsWith("Temp=")) {
+        QString tempValue = dataStr.mid(5); // après "Temp="
+        bool ok;
+        double temperature = tempValue.toDouble(&ok);
+        if (ok && temperature > 28.0) {
+            QMessageBox::warning(this, "Température élevée",
+                                 "⚠️ Température détectée : " + QString::number(temperature) + "°C");
+        }
+    }
+}*/
+
+
 
 void MainWindow::on_pushButton_ok_clicked()
 {
@@ -756,3 +799,132 @@ void MainWindow::handleChatError(const QString &error)
 {
     ui->chatDisplay->append("Erreur du chatbot : " + error);
 }
+void MainWindow::on_readyRead() {
+    // Utilise l'objet arduino pour lire les données
+    static QString bufferSerie; // ou mets QString bufferSerie; dans le header (section private:)
+    QByteArray data = arduino->readAll();
+    QString dataStr = QString::fromUtf8(data);
+    qDebug() << "📥 Données reçues : " << dataStr;
+
+    bufferSerie.append(dataStr);
+    qDebug() << "=== Buffer après append ===" << bufferSerie;
+
+    // Normalisation : remplace \r\n, \r, \n par un unique séparateur
+    bufferSerie.replace("\r\n", "\n");
+    bufferSerie.replace("\r", "\n");
+    qDebug() << "=== Buffer après normalisation ===" << bufferSerie;
+
+    while (bufferSerie.contains('\n')) {
+        int endIndex = bufferSerie.indexOf('\n');
+        QString line = bufferSerie.left(endIndex);
+        bufferSerie.remove(0, endIndex + 1);
+
+        line = line.trimmed();
+        qDebug() << "🔎 Chaîne extraite et nettoyée:" << line;
+
+        if (!line.isEmpty()) {
+            detecterIncendie(line); // Appelle ta fonction de traitement
+        } else {
+            qDebug() << "⚠️ Ligne vide reçue, ignorée.";
+        }
+    }
+}
+
+
+
+void MainWindow::detecterIncendie(QString idLocal) {
+    qDebug() << "🔥 Appel de detecterIncendie() avec:" << idLocal;
+
+    idLocal = idLocal.trimmed().remove(QChar(0));
+    int idLocalInt = idLocal.toInt();
+    qDebug() << "🧼 ID nettoyé et converti en entier:" << idLocalInt;
+
+    QSqlQuery query;
+    query.prepare("SELECT L.ID_LOCATAIRE, L.NOM, L.EMAIL "
+                  "FROM LOCAUX LC "
+                  "JOIN LOCATAIRES L ON LC.ID_LOCATAIRE = L.ID_LOCATAIRE "
+                  "WHERE LC.ID_LOCAL = :idLocal");
+    query.bindValue(":idLocal", idLocalInt);
+
+    if (!query.exec()) {
+        qDebug() << "🚨 Erreur SQL lors de l'exécution de la requête:" << query.lastError().text();
+        qDebug() << "❓ Requête préparée:" << query.lastQuery();
+        return;
+    }
+
+    if (!query.next()) {
+        qDebug() << "❌ Aucun locataire trouvé pour le local" << idLocalInt;
+        return;
+    }
+
+    QString idLocataire = query.value(0).toString();
+    QString nom         = query.value(1).toString();
+    QString email       = query.value(2).toString();
+
+    qDebug() << "✅ Données extraites - ID Locataire:" << idLocataire
+             << ", Nom:" << nom << ", Email:" << email;
+
+    if (email.isEmpty()) {
+        qDebug() << "⚠️ Aucun e-mail trouvé pour ce locataire. Fin du traitement.";
+        return;
+    }
+
+    qDebug() << "🚀 Appel de la fonction incendieEmail() avec l'email:" << email;
+    incendieEmail(email, idLocataire);
+}
+
+
+
+void MainWindow::incendieEmail(QString destinataire, QString idLocataire) {
+    qDebug() << "=== DEBUT incendieEmail === destinataire:" << destinataire << "idLocataire:" << idLocataire;
+
+    // Connexion au serveur SMTP Gmail
+    SmtpClient smtp("smtp.gmail.com", 465, SmtpClient::SslConnection);
+
+    smtp.connectToHost();
+    if (!smtp.waitForReadyConnected()) {
+        qDebug() << "🚨 Erreur : Impossible de se connecter au serveur SMTP.";
+        return;
+    }
+    qDebug() << "✅ Connexion au serveur SMTP réussie.";
+
+    // Authentification avec un mot de passe d'application
+    smtp.login("mejriftouuh@gmail.com", "wdnq ovkj cqtz cers");
+    if (!smtp.waitForAuthenticated()) {
+        qDebug() << "🚨 Erreur : Authentification échouée.";
+        return;
+    }
+    qDebug() << "✅ Authentification réussie.";
+
+    // Création du message
+    MimeMessage message;
+    EmailAddress sender("mejriftouuh@gmail.com", "LUXBRAND CENTER");
+    EmailAddress recipient(destinataire, "Locataire");
+
+    message.setSender(sender);
+    message.addRecipient(recipient);
+    message.setSubject("🚨 Alerte Incendie - LUXBRAND CENTER");
+
+    // Corps de l'email
+    MimeText text;
+    QString emailContent =
+        "Cher(e) Locataire,\n\n"
+        "Un incendie a été détecté dans votre local commercial.\n\n"
+        "Merci de vérifier immédiatement et de contacter les secours si nécessaire.\n\n"
+        "ID Locataire : " + idLocataire + "\n\n"
+                        "Cordialement,\nL'équipe de sécurité\nLUXBRAND CENTER";
+
+    text.setText(emailContent);
+    message.addPart(&text);
+
+    // Envoi du message
+    smtp.sendMail(message);
+    if (!smtp.waitForMailSent()) {
+        qDebug() << "🚨 Erreur : L'e-mail n'a pas pu être envoyé.";
+        return;
+    }
+    qDebug() << "✅ E-mail envoyé avec succès à " << destinataire;
+
+    smtp.quit();
+}
+

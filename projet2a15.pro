@@ -3,6 +3,7 @@ QT += network
 
 QT += core gui network
 QT += charts
+QT += serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,6 +13,7 @@ CONFIG += c++17
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
+    arduino.cpp \
     chatbotmanager.cpp \
     connection.cpp \
     emailaddress.cpp \
@@ -36,6 +38,7 @@ SOURCES += \
     smtpclient.cpp
 
 HEADERS += \
+    arduino.h \
     chatbotmanager.h \
     connection.h \
     emailaddress.h \

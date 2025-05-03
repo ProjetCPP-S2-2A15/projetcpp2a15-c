@@ -2,13 +2,15 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "locataire.h"  // Inclure la classe Locataire
+#include "locataire.h"
 #include "smtpclient.h"
 #include "mimehtml.h"
 #include "mimepart.h"
 #include "mimemessage.h"
 #include "mimeattachment.h"
-#include "localchat.h"  // Remplacer dialogflowchat.h par localchat.h
+#include "localchat.h"
+#include <QSerialPort>
+#include <QSerialPortInfo>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,7 +27,7 @@ public:
     ~MainWindow();
 
 private slots:
-    // Garder tous vos slots existants pour la gestion des locataires
+    // Slots pour la gestion des locataires
     void on_pushButton_ajouter_clicked();
     void afficherLocataires();
     void on_pushButton_ok_clicked();
@@ -39,19 +41,29 @@ private slots:
     void envoyerEmail(QString destinataire, QString idLocataire);
     void on_pushButton_afficherStats_clicked();
 
-    // Modifier les slots du chatbot
+    // Slots du chatbot
     void handleChatResponse(const QString &response);
     void handleChatError(const QString &error);
     void on_sendChatMessage_clicked();
 
+    // Slot pour le port série
+    void detecterIncendie(QString idLocal);
+    void incendieEmail(QString destinataire, QString idLocataire);
+    void on_readyRead();
 
 private:
     Ui::MainWindow *ui;
     bool ajoutEnCours;
     Locataire locataire;
-    LocalChat *chatbot;  // Remplacer DialogflowChat par LocalChat
-    void setupChatbot(); // Garder cette fonction mais elle sera modifiée
+    LocalChat *chatbot;
+    void setupChatbot();
     QString calculerDuree(const QString& debut, const QString& fin);
+
+    // Port série
+    QSerialPort *arduino;
+    QString portname = "COM15";
+    QSerialPort *serial;
+    QString bufferSerie; // Ajoute cette ligne
 };
 
 #endif // MAINWINDOW_H

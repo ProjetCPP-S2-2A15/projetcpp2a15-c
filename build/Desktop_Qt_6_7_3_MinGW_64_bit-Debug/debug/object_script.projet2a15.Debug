@@ -1,3 +1,4 @@
+debug/arduino.o
 debug/chatbotmanager.o
 debug/connection.o
 debug/emailaddress.o
@@ -21,6 +22,7 @@ debug/mimetext.o
 debug/quotedprintable.o
 debug/smtpclient.o
 debug/qrc_ressource.o
+debug/moc_arduino.o
 debug/moc_chatbotmanager.o
 debug/moc_localchat.o
 debug/moc_mainwindow.o
