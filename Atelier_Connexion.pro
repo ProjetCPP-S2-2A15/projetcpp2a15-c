@@ -7,9 +7,11 @@
 QT       += core gui sql \
     quick \
     serialport
+    QT += charts
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
+QT += charts
 TARGET = Atelier_Connexion
 TEMPLATE = app
 

@@ -9,6 +9,15 @@
 #include <QFileDialog>
 #include "NotificationPanel.h"
 
+#include <QChartView>
+#include <QPushButton>
+#include <QIcon>
+#include <QSqlError>
+#include <QtCharts/QChartView>
+#include <QtCharts/QPieSeries>
+#include <QtCharts/QPieSlice>
+
+
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -28,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //arduinoWindow->show();
 
     checkServiceStatus();
+    connect(ui->aff_statistique, &QPushButton::clicked, this, &MainWindow::afficherStatistiquesDansTable);
 
 
 
@@ -36,35 +46,88 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->le_prix->setValidator(prixValidator);
     ui->le_modif_prix->setValidator(prixValidator);
 
+
+
 }
+void MainWindow::afficherStatistiquesDansTable()
+{
+    qDebug() << "==> afficherStatistiquesDansTable() appelée";
+
+    QSqlDatabase db = QSqlDatabase::database();
+    if (!db.isOpen()) {
+        qDebug() << "Base de données non ouverte.";
+        return;
+    }
+
+    QSqlQuery query;
+    if (!query.exec("SELECT TO_CHAR(statut), COUNT(*) FROM SERVICES GROUP BY TO_CHAR(statut)")) {
+        qDebug() << "Erreur SQL:" << query.lastError().text();
+        return;
+    }
+
+    QPieSeries *series = new QPieSeries();
+
+    while (query.next()) {
+        QString statut = query.value(0).toString();
+        int count = query.value(1).toInt();
+        qDebug() << "Statut:" << statut << "Nombre:" << count;
+        series->append(statut, count);
+    }
+
+    if (series->count() == 0) {
+        qDebug() << "Aucune donnée à afficher.";
+        return;
+    }
+
+    QChart *chart = new QChart();
+    chart->addSeries(series);
+    chart->setTitle("Répartition des services par statut");
+    chart->legend()->setAlignment(Qt::AlignRight);
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    // Nettoyer l'ancien layout (si graphique déjà affiché)
+    QLayoutItem *child;
+    while ((child = ui->layout_statistique->takeAt(0)) != nullptr) {
+        delete child->widget();
+        delete child;
+    }
+
+    ui->layout_statistique->addWidget(chartView);
+}
+
+
 
 void MainWindow::checkServiceStatus()
 {
-
     notificationPanel->clearNotifications();
 
-    // Récupérer tous les services de la base de données
     Services service;
-    QSqlQueryModel* model = service.afficher();  // Récupérer tous les services dans un modèle
+    QSqlQueryModel* model = service.afficher();
+
+    // Définir une date limite manuelle
+    QDate dateLimite = QDate::fromString("2025-06-01", "yyyy-MM-dd");
 
     for (int i = 0; i < model->rowCount(); ++i) {
-        // Récupérer les données du service
         QString statut = model->data(model->index(i, 4)).toString();  // Statut du service
         QString dateFinStr = model->data(model->index(i, 7)).toString();  // Date de fin
         QDate dateFin = QDate::fromString(dateFinStr, "yyyy-MM-dd");
 
-        // Vérifier si le service n'est pas réalisé et que la date limite est dépassée
-        if (statut != "réalisé" && statut != "en cours" && dateFin < QDate::currentDate()) {
-            QString serviceNom = model->data(model->index(i, 1)).toString();  // Nom du service
-            // Afficher la date limite (date de fin) dans le message
-            QString message = QString("⚠️ Le service '%1' n'est pas encore réalisé. Date limite : %2")
-                                  .arg(serviceNom).arg(dateFin.toString("dd/MM/yyyy"));
+        // Afficher une notification si le service n'est pas "réalisé" ou "en cours"
+        // et que la date de fin est avant la date limite manuelle
+        if (statut != "réalisé" && statut != "en cours" && statut != "Accès autorisé" && statut != "Accès refusé") {
+            if (dateFin < dateLimite) {
+                QString serviceNom = model->data(model->index(i, 1)).toString();
+                QString message = QString("⚠️ Le service '%1' n'est pas encore réalisé. Date limite : %2")
+                                      .arg(serviceNom).arg(dateLimite.toString("dd/MM/yyyy"));
 
-            // Ajouter la notification au panneau
-            notificationPanel->addNotification(message);
+                notificationPanel->addNotification(message);
+            }
         }
     }
 }
+
 
 MainWindow::~MainWindow()
 {

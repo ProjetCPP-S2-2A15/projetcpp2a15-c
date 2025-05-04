@@ -648,21 +648,6 @@ background-color: #f5f2db;</string>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(245, 242, 219);</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset>
-                   <normalon>icons/maximize-2.svg</normalon>
-                  </iconset>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QPushButton" name="pushButton_2">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(245, 242, 219);</string>
@@ -811,7 +796,7 @@ font: 900 italic 11pt &quot;Segoe UI&quot;;
               <string>Gestion des Services</string>
              </property>
             </widget>
-            <widget class="QTabWidget" name="tabWidget">
+            <widget class="QTabWidget" name="arduino">
              <property name="geometry">
               <rect>
                <x>10</x>
@@ -819,6 +804,9 @@ font: 900 italic 11pt &quot;Segoe UI&quot;;
                <width>281</width>
                <height>311</height>
               </rect>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;arduino &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="styleSheet">
               <string notr="true">    QTabWidget::pane { 
@@ -842,7 +830,7 @@ font: 900 italic 11pt &quot;Segoe UI&quot;;
 background-color: #f5f2db;</string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>3</number>
              </property>
              <widget class="QWidget" name="tab">
               <attribute name="title">
@@ -1740,7 +1728,7 @@ font-family: Palatino Linotype;</string>
               <widget class="QLineEdit" name="id_supp">
                <property name="geometry">
                 <rect>
-                 <x>150</x>
+                 <x>140</x>
                  <y>60</y>
                  <width>51</width>
                  <height>16</height>
@@ -1757,6 +1745,76 @@ color: rgb(86, 1, 38);</string>
                </property>
                <property name="text">
                 <string/>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="tab_10">
+              <attribute name="title">
+               <string>Page</string>
+              </attribute>
+              <widget class="QLineEdit" name="event1">
+               <property name="geometry">
+                <rect>
+                 <x>60</x>
+                 <y>90</y>
+                 <width>141</width>
+                 <height>20</height>
+                </rect>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 1px;
+border-style: solid;
+border: 2px solid #8ed2ff;
+border-radius: 8px;
+font-size: 12px;
+font-family: Palatino Linotype;
+color: rgb(86, 1, 38);</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_nom_7">
+               <property name="geometry">
+                <rect>
+                 <x>90</x>
+                 <y>50</y>
+                 <width>91</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color:#A3A3A3;
+color: rgb(86, 1, 38);
+border-radius: 8px;
+font-size: 12px;
+font-family: Palatino Linotype;</string>
+               </property>
+               <property name="text">
+                <string>Evenement</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="rechercher">
+               <property name="geometry">
+                <rect>
+                 <x>90</x>
+                 <y>140</y>
+                 <width>81</width>
+                 <height>24</height>
+                </rect>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color:#A3A3A3;
+color: rgb(86, 1, 38);
+padding: 1px;
+border-style: solid;
+border: 2px solid #f77f00;
+border-radius: 8px;
+font-size: 12px;
+font-family: Palatino Linotype;</string>
+               </property>
+               <property name="text">
+                <string>rechercher</string>
                </property>
               </widget>
              </widget>
@@ -1896,20 +1954,6 @@ color: rgb(86, 1, 38);</string>
              <string>Annuler </string>
             </property>
            </widget>
-           <widget class="QTableWidget" name="tableWidget_2">
-            <property name="geometry">
-             <rect>
-              <x>450</x>
-              <y>20</y>
-              <width>601</width>
-              <height>111</height>
-             </rect>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color:#A3A3A3;
-color: rgb(86, 1, 38);</string>
-            </property>
-           </widget>
            <widget class="QTableView" name="tab_Services">
             <property name="geometry">
              <rect>
@@ -2044,6 +2088,38 @@ color: rgb(86, 1, 38);</string>
              <string>Fonctionnalités</string>
             </property>
            </widget>
+           <widget class="QPushButton" name="aff_statistique">
+            <property name="geometry">
+             <rect>
+              <x>350</x>
+              <y>80</y>
+              <width>45</width>
+              <height>29</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(245, 242, 219);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normalon>icons/maximize-2.svg</normalon>
+             </iconset>
+            </property>
+           </widget>
+           <widget class="QWidget" name="verticalLayoutWidget_2">
+            <property name="geometry">
+             <rect>
+              <x>480</x>
+              <y>10</y>
+              <width>491</width>
+              <height>181</height>
+             </rect>
+            </property>
+            <layout class="QVBoxLayout" name="layout_statistique"/>
+           </widget>
            <zorder>frame_12</zorder>
            <zorder>pushButton_telecharger_pdf</zorder>
            <zorder>notificationLibel</zorder>
@@ -2052,13 +2128,14 @@ color: rgb(86, 1, 38);</string>
            <zorder>pushButton_noti</zorder>
            <zorder>label_12</zorder>
            <zorder>pushButton_annuler_search</zorder>
-           <zorder>tableWidget_2</zorder>
            <zorder>tab_Services</zorder>
            <zorder>le_recherche</zorder>
            <zorder>pb_rechercher</zorder>
            <zorder>le_trier</zorder>
            <zorder>pb_tier</zorder>
            <zorder>pushButton_fonctionnalites_2</zorder>
+           <zorder>aff_statistique</zorder>
+           <zorder>verticalLayoutWidget_2</zorder>
           </widget>
          </item>
          <item alignment="Qt::AlignmentFlag::AlignBottom">
@@ -2299,9 +2376,9 @@ color: rgb(86, 1, 38);</string>
        <widget class="QWidget" name="verticalLayoutWidget">
         <property name="geometry">
          <rect>
-          <x>490</x>
+          <x>470</x>
           <y>200</y>
-          <width>571</width>
+          <width>591</width>
           <height>221</height>
          </rect>
         </property>

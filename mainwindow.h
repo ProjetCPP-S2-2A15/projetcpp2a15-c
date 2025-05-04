@@ -6,6 +6,7 @@
 #include <QTableWidgetItem>
 #include "NotificationPanel.h" // Assure-toi que le fichier est bien inclus
 #include "arduino.h"
+#include <QMap>
 
 namespace Ui {
 class MainWindow;
@@ -62,13 +63,14 @@ void on_actualiser_clicked();
 
 void on_pushButton_exp_clicked();
 
-
+void afficherStatistiquesDansTable();
 
 private:
     Ui::MainWindow *ui;
     Services s;
  NotificationPanel *notificationPanel;
    Arduino *arduinoWindow;
+
 
 };
 

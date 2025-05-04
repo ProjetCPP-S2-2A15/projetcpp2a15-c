@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QSerialPort>
 #include <QSqlDatabase>
+#include <QLineEdit>
 
 class ArduinoInterface : public QWidget
 {
@@ -16,25 +17,21 @@ public:
     explicit ArduinoInterface(QWidget *parent = nullptr);
     ~ArduinoInterface();
 
-private slots:
+private:
+    QTextEdit *output;
+    QPushButton *connectBtn;
+    QTimer *timer;
+    QSerialPort *serial;
+    QLineEdit *event1;
+
     void connectToArduino();
     void readData();
+    void incrementParticipantsInDatabase();  // Declare the function here
+    void on_pushButton_rechercher_clicked();
 
-private:
     int connect_arduino();
     int close_arduino();
     QByteArray read_from_arduino();
-    double getDistanceSeuil();
-    void insertDistanceInDatabase(double distance);
-
-
-
-
-
-    QTextEdit *output;
-    QPushButton *connectBtn;
-    QSerialPort *serial;
-    QTimer *timer;
 };
 
 #endif // ARDUINOINTERFACE_H
