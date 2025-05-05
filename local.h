@@ -1,3 +1,4 @@
+
 #ifndef LOCAL_H
 #define LOCAL_H
 #include <QString>

@@ -53,7 +53,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Local local; // Instance de la classe Local
-     Arduino A;
+    Arduino A;
     QString enteredNom;    // Pour stocker le nom saisi
     QString enteredPrenom; // Pour stocker le prénom saisi
 signals:
