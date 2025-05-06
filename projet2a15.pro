@@ -1,11 +1,16 @@
 QT       += core gui sql
 QT += network
-
+QT += quickwidgets
+QT += core gui serialport sql
 QT += core gui network
 QT += charts
 QT += serialport
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+
+QT += printsupport
+QT += core gui sql charts
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets quickwidgets
 
 CONFIG += c++17
 
@@ -17,6 +22,7 @@ SOURCES += \
     chatbotmanager.cpp \
     connection.cpp \
     emailaddress.cpp \
+    local.cpp \
     localchat.cpp \
     locataire.cpp \
     main.cpp \
@@ -42,6 +48,7 @@ HEADERS += \
     chatbotmanager.h \
     connection.h \
     emailaddress.h \
+    local.h \
     localchat.h \
     locataire.h \
     mainwindow.h \
@@ -71,5 +78,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
+    qml.qrc \
     ressource.qrc
 

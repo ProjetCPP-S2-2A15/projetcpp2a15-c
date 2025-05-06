@@ -11,6 +11,21 @@
 #include "localchat.h"
 #include <QSerialPort>
 #include <QSerialPortInfo>
+#include <QMainWindow>
+#include "local.h" // Inclure la classe Local
+#include <QPrinter>
+#include <QPrintPreviewDialog>
+#include <QPainter>
+#include <QTableView>
+#include <QSqlQueryModel>
+#include <QFileDialog>
+#include <QTextDocument>
+#include<QtCharts>
+#include <QChartView>
+#include <QPageSize>  // Inclure ce header pour utiliser QPageSize::A4
+#include <QLabel>
+#include <QVector>
+#include <QVariant>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -40,7 +55,8 @@ private slots:
     void on_pushButton_telecharger_2_clicked();
     void envoyerEmail(QString destinataire, QString idLocataire);
     void on_pushButton_afficherStats_clicked();
-
+    //void on_pushButton_111_clicked();
+    void on_pushButton_13_clicked();
     // Slots du chatbot
     void handleChatResponse(const QString &response);
     void handleChatError(const QString &error);
@@ -50,6 +66,26 @@ private slots:
     void detecterIncendie(QString idLocal);
     void incendieEmail(QString destinataire, QString idLocataire);
     void on_readyRead();
+    //fatma
+
+    void on_pushButton_Ajouter_clicked(); // Slot pour ajouter un local
+    void on_pushButton_Annuler_clicked();    // Slot pour annuler (effacer les champs)
+    void on_pushButton_Supprimer_clicked();
+    void on_pushButton_Modifier_clicked();
+    void mettreAJourAffichage();
+    void on_pushButton_18_clicked();
+    void rechercherLocaux();
+    void on_pushButton_telecharger_clicked();
+    void on_pushButton_statistique_clicked();
+    void on_pushButton_envoyer_clicked();
+    void on_pushButton_clear_clicked();
+    void on_pushButton_11_clicked();
+    void jeuDevineNombre();
+    void verifierCaptchaEtLancerJeu() ;
+    void pushButton_26_clicked();
+
+    void on_connecter_clicked();
+    void handleSerialData(QString rfid); // Slot pour le bouton "connecter"
 
 private:
     Ui::MainWindow *ui;
@@ -64,6 +100,14 @@ private:
     QString portname = "COM15";
     QSerialPort *serial;
     QString bufferSerie; // Ajoute cette ligne
+    Local local; // Instance de la classe Local
+    //Arduino A;
+    QString enteredNom;    // Pour stocker le nom saisi
+    QString enteredPrenom; // Pour stocker le prénom saisi
+signals:
+    void setCenter(QVariant lat, QVariant lng);
+    void setCenterWithZoom(QVariant lat, QVariant lng, QVariant zoom);
+    void addMarker(QVariant lat, QVariant lng);
 };
 
 #endif // MAINWINDOW_H

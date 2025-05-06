@@ -1,12 +1,18 @@
 #include "mainwindow.h"
+#include "mainwindow.h"
 #include "connection.h"
 #include <QApplication>
 #include <QDebug>
+#include <QSerialPort>
+#include "local.h"
+
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     Connection c;
+    Locataire l;
+    Local lo;
 
     if (c.createconnect()) {
         qDebug() << "Database connection established!";

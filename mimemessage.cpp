@@ -18,6 +18,10 @@
 */
 
 #include "mimemessage.h"
+#include <QBuffer>
+#include <QIODevice>
+#include <QBuffer>
+#include <QIODevice>
 
 #include <QDebug>
 #include <QDateTime>

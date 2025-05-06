@@ -30,6 +30,29 @@
 #include <QFile>
 #include <QDebug>
 
+#include <QMessageBox>
+#include "local.h"
+#include "connection.h"
+#include<QPdfWriter>
+#include <QPrinter>
+#include <QPrintPreviewDialog>
+#include <QPainter>
+#include <QTableView>
+#include <QSqlQueryModel>
+#include <QFileDialog>
+#include <QTextDocument>
+#include <QPageSize>  // Inclure ce header pour utiliser QPageSize::A4
+#include<QtCharts>
+#include <QChartView>
+#include <QDialog>
+#include <QCheckBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QInputDialog>
+#include <QRandomGenerator>
+#include <QQuickItem>
+#include <QDesktopServices>
+#include <QUrl>
 // Fonctions de validation avec QRegularExpression statique
 bool validerNom(const QString &nom) {
     static const QRegularExpression regex("^[A-Za-z]+( [A-Za-z]+)?$");
@@ -81,7 +104,36 @@ MainWindow::MainWindow(QWidget *parent)
         QMessageBox::critical(this, "Erreur de connexion", "Impossible de se connecter à la base de données.");
         return;
     }
+//fatma
+    ui->quickWidget->setSource(QUrl(QStringLiteral("qrc:/map.qml")));
+    ui->quickWidget->show();
+    auto obj = ui->quickWidget->rootObject();
+    connect(this, SIGNAL(setCenter(QVariant, QVariant)), obj, SLOT(setCenter(QVariant, QVariant)));
+    connect(this, SIGNAL(addMarker(QVariant, QVariant)), obj, SLOT(addMarker(QVariant, QVariant)));
 
+    emit setCenter(36.8065, 10.1815);
+    emit addMarker(36.8065, 10.1815);
+mettreAJourAffichage();
+
+
+
+
+    // Connecter les boutons "Ajouter" et "Annuler" à leurs slots respectifs
+    connect(ui->pushButton_ajouter_2, &QPushButton::clicked, this, &MainWindow::on_pushButton_Ajouter_clicked);
+     connect(ui->pushButton_annuler, &QPushButton::clicked, this, &MainWindow::on_pushButton_Annuler_clicked);
+    connect(ui->pushButton_supprimer_2, &QPushButton::clicked, this, &MainWindow::on_pushButton_Supprimer_clicked);
+     connect(ui->pushButton_modifier_2, &QPushButton::clicked, this, &MainWindow::on_pushButton_Modifier_clicked);
+    // Dans le constructeur MainWindow
+    connect(ui->pushButton_6, &QPushButton::clicked, this, &MainWindow::rechercherLocaux);
+    connect(ui->pushButton_telecharger, &QPushButton::clicked, this, &MainWindow::on_pushButton_telecharger_clicked);
+
+    connect(ui->pushButton_25, &QPushButton::clicked, this, &MainWindow::on_pushButton_statistique_clicked);
+    connect(ui->pushButton_27, &QPushButton::clicked, this, &MainWindow::on_pushButton_18_clicked);
+    connect(ui->pushButton_clear, &QPushButton::clicked, this, &MainWindow::on_pushButton_clear_clicked);
+    connect(ui->pushButton_26, &QPushButton::clicked, this, &MainWindow::pushButton_26_clicked);
+    connect(this, SIGNAL(setCenterWithZoom(QVariant, QVariant, QVariant)),
+            obj, SLOT(setCenter(QVariant, QVariant, QVariant)));
+//////
     qDebug() << "Connexion du bouton ajouter au slot";
 
     // Connexions des boutons aux slots
@@ -90,6 +142,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_6, &QPushButton::clicked, this, &MainWindow::on_pushButton_6_clicked);
     connect(ui->pushButton_mailing, &QPushButton::clicked, this, &MainWindow::on_pushButton_mailing_clicked);
     connect(ui->pushButton_afficherStats, &QPushButton::clicked, this, &MainWindow::on_pushButton_afficherStats_clicked);
+    connect(ui->pushButton_111, &QPushButton::clicked, this, &MainWindow::on_pushButton_11_clicked);
+    //connect(ui->pushButton_13, &QPushButton::clicked, this, &MainWindow::on_pushButton_13_clicked);
+
 
     // === CONFIGURATION DU CHATBOT ===
     chatbot = new LocalChat(this);
@@ -927,4 +982,487 @@ void MainWindow::incendieEmail(QString destinataire, QString idLocataire) {
 
     smtp.quit();
 }
+
+/*void MainWindow::On_pushButton_111_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->page_3); // Aller directement à la page_3
+}*/
+void MainWindow::on_pushButton_13_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->page_4); // Affiche la page 4
+}
+
+
+
+//fatma
+
+
+
+void MainWindow::on_pushButton_Ajouter_clicked()
+{
+    // Récupérer les valeurs saisies
+    bool ok;
+    double surface = ui->lineEdit_surface->text().toDouble(&ok);
+    if (!ok || surface <= 0) {
+        QMessageBox::warning(this, "Erreur", "Veuillez saisir une surface valide (nombre positif).");
+        return;
+    }
+
+    QString type = ui->comboBox_type->currentText();
+    if (type.isEmpty()) {
+        QMessageBox::warning(this, "Erreur", "Veuillez sélectionner un type.");
+        return;
+    }
+
+    QString disponibilite = ui->comboBox_dispo->currentText();
+    if (disponibilite.isEmpty() || (disponibilite != "dispo" && disponibilite != "non")) {
+        QMessageBox::warning(this, "Erreur", "Veuillez sélectionner une disponibilité valide ('dispo' ou 'non').");
+        return;
+    }
+
+    double prix = ui->lineEdit_prix->text().toDouble(&ok);
+    if (!ok || prix <= 0) {
+        QMessageBox::warning(this, "Erreur", "Veuillez saisir un prix valide (nombre positif).");
+        return;
+    }
+
+    QString etage = ui->comboBox_etage->currentText();
+    if (etage.isEmpty()) {
+        QMessageBox::warning(this, "Erreur", "Veuillez sélectionner un étage.");
+        return;
+    }
+
+    // Créer un objet Local avec les valeurs saisies
+    Local local(surface, type, disponibilite, prix, etage);
+
+    // Ajouter le local à la base de données
+    if (local.ajouter()) {
+        QMessageBox::information(this, "Succès", "Local commercial ajouté avec succès !");
+        mettreAJourAffichage();
+        on_pushButton_Annuler_clicked(); // Effacer les champs de saisie
+    } else {
+        QMessageBox::critical(this, "Erreur", "Erreur lors de l'ajout du local commercial.");
+    }
+}
+// Slot pour annuler (effacer les champs)
+void MainWindow::on_pushButton_Annuler_clicked()
+{
+    // Effacer tous les champs de saisie
+
+    ui->lineEdit_surface->clear();
+    ui->comboBox_type->setCurrentIndex(0); // Réinitialiser le comboBox
+    ui->comboBox_dispo->setCurrentIndex(0); // Réinitialiser le comboBox
+    ui->lineEdit_prix->clear();
+    ui->comboBox_etage->setCurrentIndex(0); // Réinitialiser le comboBox
+    ui->lineEdit_id_3->clear();
+}
+void MainWindow::on_pushButton_Supprimer_clicked()
+{
+    // Récupérer l'ID saisi
+    QString idText = ui->lineEdit_id_3->text();
+    bool conversionOk;
+    long long id = idText.toLongLong(&conversionOk);
+
+    // Valider l'ID
+    if (!conversionOk || id <= 0) {
+        QMessageBox::warning(this, "Erreur", "Veuillez saisir un ID valide.");
+        return;
+    }
+
+    // Supprimer le local
+    Local local;
+    if (local.supprimer(id)) {
+        QMessageBox::information(this, "Succès", "Local commercial supprimé avec succès !");
+        mettreAJourAffichage();
+        on_pushButton_Annuler_clicked();
+        ui->lineEdit_id_3->clear(); // Effacer le champ ID après suppression
+    } else {
+        QMessageBox::critical(this, "Erreur", "Échec de la suppression du local commercial.");
+    }
+}
+void MainWindow::on_pushButton_Modifier_clicked()
+{
+    // Récupérer l'ID saisi
+    QString idText = ui->lineEdit_idU->text();
+    bool conversionOk;
+    long long id = idText.toLongLong(&conversionOk);
+
+    // Valider l'ID
+    if (!conversionOk || id <= 0) {
+        QMessageBox::warning(this, "Erreur", "Veuillez saisir un ID valide.");
+        return;
+    }
+
+    // Récupérer les nouvelles valeurs saisies
+    double surface = ui->lineEdit_id_2->text().toDouble();
+    QString type = ui->comboBox_4->currentText();
+    QString disponibilite = ui->comboBox_6->currentText();
+    double prix = ui->lineEdit_lieu_2->text().toDouble();
+    QString etage = ui->comboBox_5->currentText();
+
+    // Valider les valeurs saisies
+    if (surface <= 0 || prix <= 0 || type.isEmpty() || disponibilite.isEmpty() || etage.isEmpty()) {
+        QMessageBox::warning(this, "Erreur", "Veuillez saisir des valeurs valides.");
+        return;
+    }
+
+    // Créer un objet Local avec les nouvelles valeurs
+    Local local(surface, type, disponibilite, prix, etage);
+
+    // Modifier le local dans la base de données
+    if (local.modifier(id)) {
+        QMessageBox::information(this, "Succès", "Local commercial modifié avec succès !");
+        mettreAJourAffichage();  // ✅ Rafraîchir TableView
+        on_pushButton_Annuler_clicked(); // Effacer les champs de saisie
+    } else {
+        QMessageBox::critical(this, "Erreur", "Échec de la modification du local commercial.");
+    }
+}
+
+void MainWindow::mettreAJourAffichage()
+{
+    Local local;
+    ui->tableView_4->setModel(local.afficher());
+}
+void MainWindow::on_pushButton_18_clicked()
+{
+    QSqlQueryModel* model = local.trier();
+    if (model != nullptr) {
+        ui->tableView_4->setModel(model);
+    } else {
+        QMessageBox::critical(this, "Erreur", "Erreur lors du tri des locaux.");
+    }
+}
+void MainWindow::rechercherLocaux()
+{
+    // Récupérer la valeur entrée dans le QLineEdit
+    QString disponibilite = ui->lineEdit->text().trimmed();
+
+    // Vérifier si la disponibilité est "dispo" ou "non"
+    if (disponibilite == "dispo" || disponibilite == "non") {
+        Local local;  // Créer un objet Local pour accéder à la méthode de recherche
+        QSqlQueryModel* model = local.rechercherParDisponibilite(disponibilite);
+
+        if (model != nullptr) {
+            // Afficher les résultats dans le QTableView
+            ui->tableView_4->setModel(model);
+        } else {
+            QMessageBox::warning(this, "Erreur", "Aucun local trouvé pour cette disponibilité.");
+        }
+    } else {
+        QMessageBox::warning(this, "Erreur", "Veuillez entrer 'dispo' ou 'non' pour rechercher.");
+    }
+}
+void MainWindow::on_pushButton_telecharger_clicked()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Save PDF"), "", tr("PDF Files (*.pdf)"));
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+    QPdfWriter pdfWriter(filePath);
+    pdfWriter.setPageSize(QPageSize::A4);
+    pdfWriter.setTitle("locaux List");
+
+    QPainter painter(&pdfWriter);
+    int yPos = 1000;  // Initial vertical position
+    int rowHeight = 1000;  // Row height
+
+    QFont titleFont("Helvetica", 18, QFont::Bold);
+    QFont headerFont("Helvetica", 12, QFont::Bold);
+    QFont contentFont("Helvetica", 12);
+
+    // Title
+    painter.setFont(titleFont);
+    painter.drawText(500, 500, "LOCAUX List");
+
+    // Header
+    painter.setFont(headerFont);
+    painter.drawText(400, yPos, "ID_LOCAL");
+    painter.drawText(1500, yPos, "SURFACE");
+    painter.drawText(2800, yPos, "TYPE");
+    painter.drawText(4500, yPos, "DISPONIBILITE");
+    painter.drawText(6300, yPos, "PRIX");
+    painter.drawText(7200, yPos, "ETAGE");
+
+
+    yPos += rowHeight;
+
+    QSqlQuery query;
+    if (!query.prepare("SELECT ID_LOCAL, SURFACE, TYPE, DISPONIBILITE, PRIX, ETAGE FROM FETHI.local_commerciale")) {
+        qDebug() << "SQL Error: " << query.lastError().text();
+        QMessageBox::critical(this, "Database Error", "Failed to retrieve fournisseur data:\n" + query.lastError().text());
+        return;
+    }
+
+    if (query.exec()) {
+        painter.setFont(contentFont);
+        while (query.next()) {
+            painter.drawText(400, yPos, query.value("ID_LOCAL").toString());
+            painter.drawText(1500, yPos, query.value("SURFACE").toString());
+            painter.drawText(2800, yPos, query.value("TYPE").toString());
+            painter.drawText(4500, yPos, query.value("DISPONIBILITE").toString());
+            painter.drawText(6000, yPos, QString::number(query.value("PRIX").toInt()));
+            painter.drawText(7800, yPos, query.value("ETAGE").toString());
+
+            yPos += rowHeight;
+
+            if (yPos > pdfWriter.height() - 100) {
+                pdfWriter.newPage();
+                yPos = 100;
+            }
+        }
+    } else {
+        qDebug() << "SQL Error: " << query.lastError().text();
+        QMessageBox::critical(this, "Database Error", "Failed to retrieve LOCAUX data:\n" + query.lastError().text());
+    }
+
+    painter.end();
+    QMessageBox::information(nullptr, tr("PDF file created successfully!"), tr("PDF Export"));
+}
+
+void MainWindow::on_pushButton_statistique_clicked()
+{
+    QSqlQuery query;
+    QMap<QString, int> counts;
+
+    // On récupère le nombre de locaux par type
+    if (query.exec("SELECT DISPONIBILITE, COUNT(*) FROM FETHI.local_commerciale GROUP BY DISPONIBILITE")) {
+        while (query.next()) {
+            QString disponibilite = query.value(0).toString();
+            int count = query.value(1).toInt();
+            counts[disponibilite] = count;
+        }
+    } else {
+        QMessageBox::critical(this, "Erreur SQL", "Échec de récupération des statistiques :\n" + query.lastError().text());
+        return;
+    }
+
+    // Création de la série de données
+    QPieSeries *series = new QPieSeries();
+    for (auto it = counts.begin(); it != counts.end(); ++it) {
+        series->append(it.key(), it.value());
+    }
+
+    QChart *chart = new QChart();
+    chart->addSeries(series);
+    chart->setTitle("Répartition des locaux par disponibilite");
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    // Affichage dans une nouvelle fenêtre
+    QMainWindow *statsWindow = new QMainWindow(this);
+    statsWindow->setWindowTitle("Statistiques des Locaux");
+    statsWindow->resize(600, 400);
+    statsWindow->setCentralWidget(chartView);
+    statsWindow->show();
+}
+void MainWindow::on_pushButton_envoyer_clicked()
+{
+    QString question = ui->lineEdit_question->text();
+    ui->textBrowser_chat->append("Vous : " + question);
+
+    // Vérification des mots-clés dans la question
+    if (question.contains("dispo", Qt::CaseInsensitive)) {
+        // Requête pour récupérer les IDs des locaux disponibles
+        QSqlQuery query("SELECT ID_LOCAL FROM FETHI.local_commerciale WHERE LOWER(DISPONIBILITE) = 'dispo'");
+        QStringList ids;
+        while (query.next()) {
+            ids << query.value(0).toString();
+        }
+        if (ids.isEmpty()) {
+            ui->textBrowser_chat->append("Assistant : Aucun local disponible.");
+        } else {
+            ui->textBrowser_chat->append("Assistant : Locaux disponibles : " + ids.join(", "));
+        }
+    }
+    else if (question.contains("prix", Qt::CaseInsensitive)) {
+        // Requête pour récupérer l'ID et le prix des locaux disponibles
+        QSqlQuery query("SELECT ID_LOCAL, PRIX FROM FETHI.local_commerciale WHERE LOWER(DISPONIBILITE) = 'dispo'");
+        bool localFound = false;
+        while (query.next()) {
+            localFound = true;
+            ui->textBrowser_chat->append("Assistant : Local " + query.value(0).toString() + " → " + query.value(1).toString() + " DT");
+        }
+        if (!localFound) {
+            ui->textBrowser_chat->append("Assistant : Aucun prix disponible pour les locaux.");
+        }
+    }
+    else if (question.contains("étage", Qt::CaseInsensitive)) {
+        // Requête pour récupérer l'ID et l'étage des locaux disponibles
+        QSqlQuery query("SELECT ID_LOCAL, ETAGE FROM FETHI.local_commerciale WHERE LOWER(DISPONIBILITE) = 'dispo'");
+        bool localFound = false;
+        while (query.next()) {
+            localFound = true;
+            ui->textBrowser_chat->append("Assistant : Local " + query.value(0).toString() + " est à l'" + query.value(1).toString());
+        }
+        if (!localFound) {
+            ui->textBrowser_chat->append("Assistant : Aucun étage disponible pour les locaux.");
+        }
+    }
+    else if (question.contains("type", Qt::CaseInsensitive)) {
+        // Requête pour récupérer l'ID et le type des locaux disponibles
+        QSqlQuery query("SELECT ID_LOCAL, TYPE FROM FETHI.local_commerciale WHERE LOWER(DISPONIBILITE) = 'dispo'");
+        bool localFound = false;
+        while (query.next()) {
+            localFound = true;
+            ui->textBrowser_chat->append("Assistant : Local " + query.value(0).toString() + " est un(e) " + query.value(1).toString());
+        }
+        if (!localFound) {
+            ui->textBrowser_chat->append("Assistant : Aucun type de local trouvé.");
+        }
+    }
+    else {
+        ui->textBrowser_chat->append("Assistant : Je ne comprends pas encore cette question.");
+    }
+
+    // Réinitialiser le champ de texte après l'envoi de la question
+    ui->lineEdit_question->clear();
+}
+
+// Fonction pour réinitialiser les champs lorsque le bouton Clear est cliqué
+void MainWindow::on_pushButton_clear_clicked()
+{
+    ui->lineEdit_question->clear();          // Efface la zone de saisie de la question
+    ui->textBrowser_chat->clear();           // Efface le chat (zone de texte de réponse)
+}
+
+void MainWindow::jeuDevineNombre() {
+    int nombreSecret = QRandomGenerator::global()->bounded(1, 11); // entre 1 et 10
+    int essaisRestants = 3;
+    bool ok;
+
+    while (essaisRestants > 0) {
+        int tentative = QInputDialog::getInt(this, "Jeu : Devine le Nombre",
+                                             QString("Il te reste %1 essai(s).\nDevine un nombre entre 1 et 10 :").arg(essaisRestants),
+                                             1, 1, 10, 1, &ok);
+
+        if (!ok) break;  // L'utilisateur a annulé
+
+        if (tentative == nombreSecret) {
+            QMessageBox::information(this, "Bravo !", "Tu as deviné le bon nombre 🎉");
+            return;
+        } else if (tentative < nombreSecret) {
+            QMessageBox::information(this, "Trop bas", "Essaie un nombre plus grand !");
+        } else {
+            QMessageBox::information(this, "Trop haut", "Essaie un nombre plus petit !");
+        }
+
+        essaisRestants--;
+    }
+
+    QMessageBox::warning(this, "Perdu 😢", QString("Désolé, le bon nombre était %1").arg(nombreSecret));
+    QApplication::quit();
+}
+
+void MainWindow::on_pushButton_11_clicked() {
+    verifierCaptchaEtLancerJeu();
+    ui->stackedWidget->setCurrentWidget(ui->page_3); // Aller directement à la page_3
+}
+
+void MainWindow::verifierCaptchaEtLancerJeu() {
+    QMessageBox::StandardButton reponse;
+    reponse = QMessageBox::question(this, "Vérification", "🧠 Je ne suis pas un robot", QMessageBox::Yes | QMessageBox::No);
+
+    if (reponse == QMessageBox::Yes) {
+        // Si l'utilisateur coche "Oui", lancer le jeu
+        jeuDevineNombre();
+    } else {
+        QMessageBox::information(this, "Accès refusé", "Veuillez confirmer que vous n’êtes pas un robot.");
+        QApplication::quit();
+    }
+}
+
+void MainWindow::pushButton_26_clicked()
+{
+    // Coordonnées exactes de Tunisia Mall
+    double lat = 36.8117;
+    double lng = 10.1631;
+
+    emit setCenter(lat, lng);
+    emit addMarker(lat, lng);
+
+    // Si vous avez ajouté setCenterWithZoom :
+    emit setCenterWithZoom(lat, lng, 16);
+}
+// [Le reste du fichier reste inchangé jusqu'à on_connecter_clicked]
+
+/*void MainWindow::on_connecter_clicked()
+{
+    QString rfid = ui->textEdit_uid->text().trimmed(); // Récupérer l'UID saisi
+
+    if (rfid.isEmpty()) {
+        QMessageBox::warning(this, "Erreur", "Veuillez entrer un UID.");
+        return;
+    }
+
+    // Traiter l'UID saisi
+    handleSerialData(rfid);
+}
+
+void MainWindow::handleSerialData(QString rfid)
+{
+    qDebug() << "RFID à traiter :" << rfid;
+
+    if (rfid.isEmpty()) {
+        qDebug() << "Données vides ignorées.";
+        if (A.getserial()->isOpen()) {
+            A.write_to_arduino("0|Erreur|Erreur\n");
+            qDebug() << "Envoi à l'Arduino : 0|Erreur|Erreur";
+        }
+        return;
+    }
+
+    QSqlQuery query;
+    query.prepare("SELECT NOM, PRENOM FROM FETHI.EMPLOYE WHERE RFID = :rfid");
+    query.bindValue(":rfid", rfid);
+
+    if (!query.exec()) {
+        qDebug() << "Erreur SQL :" << query.lastError().text();
+        if (A.getserial()->isOpen()) {
+            A.write_to_arduino("0|Erreur|SQL\n");
+            qDebug() << "Envoi à l'Arduino : 0|Erreur|SQL";
+        }
+        return;
+    }
+
+    if (query.next()) {
+        QString nom = query.value("NOM").toString();
+        QString prenom = query.value("PRENOM").toString();
+
+        if (rfid == "A3478F28" || rfid == "E941054B") {
+            if (A.getserial()->isOpen()) {
+                A.write_to_arduino(("1|" + nom + "|" + prenom + "\n").toUtf8());
+                qDebug() << "Envoi à l'Arduino : 1|" << nom << "|" << prenom;
+            } else {
+                qDebug() << "Erreur : Port série non ouvert, impossible d'envoyer à l'Arduino.";
+            }
+        } else if (rfid == "718AA97B") {
+            if (A.getserial()->isOpen()) {
+                A.write_to_arduino(("0|" + nom + "|" + prenom + "\n").toUtf8());
+                qDebug() << "Envoi à l'Arduino : 0|" << nom << "|" << prenom;
+            } else {
+                qDebug() << "Erreur : Port série non ouvert, impossible d'envoyer à l'Arduino.";
+            }
+        } else {
+            if (A.getserial()->isOpen()) {
+                A.write_to_arduino(("0|" + nom + "|" + prenom + "\n").toUtf8());
+                qDebug() << "Envoi à l'Arduino : 0|" << nom << "|" << prenom;
+            } else {
+                qDebug() << "Erreur : Port série non ouvert, impossible d'envoyer à l'Arduino.";
+            }
+        }
+
+    } else {
+        if (A.getserial()->isOpen()) {
+            A.write_to_arduino("0|Inconnu|Inconnu\n");
+            qDebug() << "Envoi à l'Arduino : 0|Inconnu|Inconnu";
+        } else {
+            qDebug() << "Erreur : Port série non ouvert, impossible d'envoyer à l'Arduino.";
+        }
+    }
+}*/
+
+
 

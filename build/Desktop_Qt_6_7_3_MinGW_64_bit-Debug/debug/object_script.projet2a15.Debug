@@ -2,6 +2,7 @@ debug/arduino.o
 debug/chatbotmanager.o
 debug/connection.o
 debug/emailaddress.o
+debug/local.o
 debug/localchat.o
 debug/locataire.o
 debug/main.o
@@ -21,6 +22,7 @@ debug/mimeqpformatter.o
 debug/mimetext.o
 debug/quotedprintable.o
 debug/smtpclient.o
+debug/qrc_qml.o
 debug/qrc_ressource.o
 debug/moc_arduino.o
 debug/moc_chatbotmanager.o
