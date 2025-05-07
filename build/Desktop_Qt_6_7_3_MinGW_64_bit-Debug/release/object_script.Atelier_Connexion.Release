@@ -3,7 +3,10 @@ release/arduinowidget.o
 release/employee1.o
 release/local.o
 release/loginwindow.o
+release/mailer.o
 release/main.o
+release/mainmaintenance.o
+release/maintenance.o
 release/mainwindow.o
 release/connection.o
 release/registerwindow.o
@@ -11,5 +14,7 @@ release/statistique.o
 release/qrc_images.o
 release/moc_arduinowidget.o
 release/moc_loginwindow.o
+release/moc_mailer.o
+release/moc_mainmaintenance.o
 release/moc_mainwindow.o
 release/moc_registerwindow.o

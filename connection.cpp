@@ -16,8 +16,8 @@ bool Connection::createconnect()
 
     // Définition du nom de la source de données
     db.setDatabaseName("source_projet2A"); // Nom de la source de données
-    db.setUserName("samar");               // Nom d'utilisateur pour la connexion
-    db.setPassword("samar");               // Mot de passe de l'utilisateur
+    db.setUserName("ines");               // Nom d'utilisateur pour la connexion
+    db.setPassword("zamankii");               // Mot de passe de l'utilisateur
 
     // Tentative d'ouverture de la connexion
     if (db.open()) {

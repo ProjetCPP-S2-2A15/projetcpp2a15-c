@@ -90,24 +90,15 @@ void RegisterWindow::createAccount(const QString &email, const QString &password
     QByteArray hash = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
 
     // Étape 2 : Insérer dans la table EMPLOYE sans spécifier ID_EMPLOYE (car il est auto-incrémenté)
-    query.prepare("INSERT INTO employe (email, password) "
-                  "VALUES (:email, :password)");
+    query.prepare("INSERT INTO employe (ID_EMPLOYE, NOM, PRENOM, POSTE, STATUS, EMAIL, ADRESSE, PASSWORD, ROLE) "
+                  "VALUES (employe_seq.NEXTVAL, '', '', '', '', :email, '', :password, '')");
     query.bindValue(":email", email);
-    query.bindValue(":password", hash.toHex());
+    query.bindValue(":password", password);
 
-
-    if (!query.exec()) {
-        db.rollback();
-        QMessageBox::critical(this, "Erreur", "Échec de l'insertion dans EMPLOYE : " + query.lastError().text());
-        return;
+    if (query.exec()) {
+        QMessageBox::information(this, "Succès", "Compte créé avec succès !");
+        this->close();
+    } else {
+        QMessageBox::critical(this, "Erreur", "Échec de la création du compte.\n" + query.lastError().text());
     }
-
-    // Valider la transaction
-    if (!db.commit()) {
-        QMessageBox::critical(this, "Erreur", "Échec de la validation de la transaction : " + db.lastError().text());
-        return;
-    }
-
-    QMessageBox::information(this, "Succès", "Compte employé créé avec succès !");
-    this->close();
 }
