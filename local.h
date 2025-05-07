@@ -1,9 +1,13 @@
+
 #ifndef LOCAL_H
 #define LOCAL_H
 #include <QString>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
+#include <QSqlTableModel>
 #include "connection.h"
+#include <QStandardItemModel>
+#include <QStandardItem>
 class Local
 {
 private:
@@ -19,7 +23,6 @@ public:
     Local();
     Local( double, QString, QString, double, QString);
     Local(long long ,double, QString, QString, double, QString);
-
     // Getters & Setters
     long long getId() const { return id; }
     double getSurface() const { return surface; }
@@ -38,7 +41,10 @@ public:
     bool ajouter();
     bool modifier(long long id);
     bool supprimer(long long id);
-    QSqlQueryModel* afficher();
+    QStandardItemModel* afficher();
+    QSqlQueryModel* trier();
+    QSqlQueryModel* rechercherParDisponibilite(const QString& disponibilite);
+
 };
 
 #endif // LOCAL_H

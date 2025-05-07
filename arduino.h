@@ -9,29 +9,23 @@ class Arduino
 {
 public:
     Arduino();
+    ~Arduino();
 
-    // Méthodes pour la gestion de la connexion avec Arduino
-    int connect_arduino();         // Se connecter à Arduino
-    int close_arduino();           // Fermer la connexion Arduino
-    int write_to_arduino(QByteArray);  // Écrire dans Arduino
-    QByteArray read_from_arduino();   // Lire depuis Arduino
-
-    // Méthodes pour récupérer des informations
-    QSerialPort* getserial();           // Retourne le port série
-    QString getarduino_port_name();     // Retourne le nom du port Arduino
-
-    // Recherche de code RFID dans la base de données Oracle
+    int connect_arduino();
+    int close_arduino();
+    int write_to_arduino(QByteArray data);
+    QByteArray read_from_arduino();
+    QSerialPort* getserial();
+    QString getarduino_port_name();
     QByteArray cherchercode(QString rfid);
 
 private:
-    QSerialPort *Serial;           // Objet de communication série
-    static const quint16 arduino_uno_vendor_id = 9025;  // Identifiant du vendeur Arduino
-    static const quint16 arduino_uno_product_id = 67;   // Identifiant du produit Arduino
-    QString arduino_port_name;     // Nom du port série
-    bool arduino_is_available;     // Vérification de la disponibilité d'Arduino
-
-    QByteArray data;              // Stocke les données lues depuis Arduino
+    QSerialPort *Serial;
+    static const quint16 arduino_uno_vendor_id = 9025;
+    static const quint16 arduino_uno_product_id = 67;
+    QString arduino_port_name;
+    bool arduino_is_available;
+    QByteArray data;
 };
 
 #endif // ARDUINO_H
-

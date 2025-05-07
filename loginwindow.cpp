@@ -105,9 +105,8 @@ void loginwindow::checkLogin() {
     query.bindValue(":password", password);
 
     if (query.exec() && query.next()) {
-        MainWindow *mainWin = new MainWindow();
-        mainWin->show();
-        this->close();
+        emit loginSuccessful(); // Émettre le signal de connexion réussie
+        this->hide(); // Cacher la fenêtre de login
     } else {
         loginAttempts++;
         QMessageBox::warning(this, "Erreur de connexion", "Email ou mot de passe incorrect.");
@@ -120,19 +119,19 @@ void loginwindow::checkLogin() {
 }
 
 void loginwindow::handleFaceRecognition() {
-    // Chemin vers python.exe (modifié)
-    QString pythonPath = "C:\\Program Files\\Python313\\python.exe";  // Met à jour ce chemin si nécessaire
+    // Chemin vers python.exe
+    QString pythonPath = "C:\\Program Files\\Python313\\python.exe";
 
-    // Chemin vers ton script Python (modifié)
-    QString scriptPath = "C:\\Users\\siwar\\Downloads\\reconnaisanceFaciale\\face\\detect.py";  // Met à jour ce chemin si nécessaire
+    // Chemin vers ton script Python
+    QString scriptPath = "C:\\Users\\siwar\\Downloads\\reconnaisanceFaciale\\face\\detect.py";
 
     // Création d'un processus QProcess pour exécuter le script Python
     QProcess *process = new QProcess(this);
 
     // Configuration de l'environnement du processus
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("PATH", "C:\\Program Files\\Python313\\Scripts");  // Met à jour ce chemin si nécessaire
-    env.insert("PYTHONPATH", "C:\\Program Files\\Python313");  // Met à jour ce chemin si nécessaire
+    env.insert("PATH", "C:\\Program Files\\Python313\\Scripts");
+    env.insert("PYTHONPATH", "C:\\Program Files\\Python313");
     process->setProcessEnvironment(env);
 
     // Connexion à la sortie standard du processus pour afficher le résultat
@@ -144,9 +143,8 @@ void loginwindow::handleFaceRecognition() {
             QMessageBox::critical(this, "Erreur", "Reconnaissance faciale échouée.");
         } else {
             QMessageBox::information(this, "Succès", "Accès autorisé par reconnaissance faciale.");
-            MainWindow *mainWin = new MainWindow();
-            mainWin->show();
-            this->close();
+            emit loginSuccessful(); // Émettre le signal de connexion réussie
+            this->hide(); // Cacher la fenêtre de login
         }
     });
 

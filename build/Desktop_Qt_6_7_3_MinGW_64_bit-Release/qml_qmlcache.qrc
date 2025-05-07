@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<RCC>
+    <qresource prefix="/new/prefix1"/>
+    <qresource prefix="/">
+        <file alias="map.qml">../../map.qml</file>
+        <file alias="Marker.qml">../../Marker.qml</file>
+    </qresource>
+</RCC>

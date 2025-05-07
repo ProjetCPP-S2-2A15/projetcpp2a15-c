@@ -3,13 +3,16 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QString>
+#include <QSqlTableModel>
 #include "connection.h"
+#include <QStandardItemModel>
+#include <QStandardItem>
 
 // Constructeurs
 Local::Local() : id(0), surface(0.0), type(""), disponibilite("Disponible"), prix(0.0), etage("") {}
 
-Local::Local( double surface, QString type, QString disponibilite, double prix, QString etage)
-    :  surface(surface), type(type), disponibilite(disponibilite), prix(prix), etage(etage) {}
+Local::Local(double surface, QString type, QString disponibilite, double prix, QString etage)
+    : surface(surface), type(type), disponibilite(disponibilite), prix(prix), etage(etage) {}
 Local::Local(long long id, double surface, QString type, QString disponibilite, double prix, QString etage)
     : id(id), surface(surface), type(type), disponibilite(disponibilite), prix(prix), etage(etage) {}
 
@@ -17,9 +20,8 @@ bool Local::ajouter()
 {
     QSqlQuery query;
 
-    query.prepare("INSERT INTO fatma.local_commerciale ( SURFACE, TYPE, DISPONIBILITE, PRIX, ETAGE) "
-                  "VALUES ( :SURFACE, :TYPE, :DISPONIBILITE, :PRIX, :ETAGE)");
-
+    query.prepare("INSERT INTO LOCAL_COMMERCIALE (SURFACE, TYPE, DISPONIBILITE, PRIX, ETAGE) "
+                  "VALUES (:SURFACE, :TYPE, :DISPONIBILITE, :PRIX, :ETAGE)");
 
     query.bindValue(":SURFACE", surface);
     query.bindValue(":TYPE", type);
@@ -35,12 +37,13 @@ bool Local::ajouter()
     qDebug() << "✅ Local commercial ajouté avec succès!";
     return true;
 }
+
 bool Local::supprimer(long long id) {
     QSqlQuery query;
     QString res = QString::number(id); // Convertir l'ID en QString
 
     // Préparer la requête SQL pour supprimer le local
-    query.prepare("DELETE FROM fatma.local_commerciale WHERE ID_LOCAL = :ID_LOCAL");
+    query.prepare("DELETE FROM LOCAL_COMMERCIALE WHERE ID_LOCAL = :ID_LOCAL");
     query.bindValue(":ID_LOCAL", res);
 
     // Exécuter la requête
@@ -58,6 +61,7 @@ bool Local::supprimer(long long id) {
     qDebug() << "✅ Local commercial supprimé avec succès !";
     return true;
 }
+
 bool Local::modifier(long long id) {
     QSqlQuery query;
 
@@ -65,7 +69,7 @@ bool Local::modifier(long long id) {
     QString res = QString::number(id);
 
     // Préparer la requête SQL pour mettre à jour le local
-    query.prepare("UPDATE fatma.local_commerciale SET "
+    query.prepare("UPDATE LOCAL_COMMERCIALE SET "
                   "SURFACE = :SURFACE, "
                   "TYPE = :TYPE, "
                   "DISPONIBILITE = :DISPONIBILITE, "
@@ -75,7 +79,7 @@ bool Local::modifier(long long id) {
 
     // Lier les valeurs aux paramètres de la requête
     query.bindValue(":ID_LOCAL", res); // ID du local à modifier
-    query.bindValue(":SURFACE", this->surface);  // Utiliser les valeurs de l'objet `Local`
+    query.bindValue(":SURFACE", this->surface);  // Utiliser les valeurs de l'objet Local
     query.bindValue(":TYPE", this->type);
     query.bindValue(":DISPONIBILITE", this->disponibilite);
     query.bindValue(":PRIX", this->prix);
@@ -97,20 +101,50 @@ bool Local::modifier(long long id) {
     }
 }
 
-QSqlQueryModel* Local::afficher()
+QStandardItemModel* Local::afficher()
 {
-    QSqlQueryModel* model = new QSqlQueryModel();
+    QStandardItemModel* model = new QStandardItemModel();
+    QSqlQuery query("SELECT ID_LOCAL, SURFACE, TYPE, DISPONIBILITE, PRIX, ETAGE FROM LOCAL_COMMERCIALE");
+    model->setHorizontalHeaderLabels({"ID_LOCAL", "SURFACE", "TYPE", "DISPONIBILITE", "PRIX", "ETAGE"});
+    while (query.next()) {
+        QList<QStandardItem*> items;
+        for (int col = 0; col < 6; ++col)
+            items << new QStandardItem(query.value(col).toString());
+        model->appendRow(items);
+    }
+    return model;
+}
+
+QSqlQueryModel* Local::trier()
+{
+    QSqlQueryModel* model = new QSqlQueryModel;
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM LOCAL_COMMERCIALE ORDER BY PRIX ASC");  // Trier par prix
+
+    if (!query.exec()) {
+        qDebug() << "Erreur lors du tri des locaux : " << query.lastError().text();
+        return nullptr;
+    }
+
+    model->setQuery(query);
+    return model;
+}
+
+QSqlQueryModel* Local::rechercherParDisponibilite(const QString& disponibilite)
+{
+    QSqlQueryModel* model = new QSqlQueryModel;
     QSqlQuery query;
 
-    query.prepare("SELECT ID_LOCAL, SURFACE, TYPE, DISPONIBILITE, PRIX, ETAGE FROM fatma.local_commerciale");
+    query.prepare("SELECT ID_LOCAL, SURFACE, TYPE, DISPONIBILITE, PRIX, ETAGE FROM LOCAL_COMMERCIALE WHERE DISPONIBILITE = :DISPONIBILITE");
+    query.bindValue(":DISPONIBILITE", disponibilite);
 
     if (query.exec()) {
         model->setQuery(query);
-        qDebug() << "✅ Données chargées avec succès dans TableView !";
+        qDebug() << "✅ Recherche par disponibilité effectuée avec succès !";
     } else {
-        qDebug() << "❌ Erreur SQL lors de l'affichage :" << query.lastError().text();
+        qDebug() << "❌ Erreur SQL lors de la recherche par disponibilité :" << query.lastError().text();
     }
 
     return model;
 }
-

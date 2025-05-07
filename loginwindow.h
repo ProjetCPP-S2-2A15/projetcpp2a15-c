@@ -4,24 +4,26 @@
 #include <QWidget>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QProcess>
 
-class loginwindow : public QWidget {
+class loginwindow : public QWidget
+{
     Q_OBJECT
 
 public:
     explicit loginwindow(QWidget *parent = nullptr);
 
+signals:
+    void loginSuccessful(); // Signal emitted on successful login
+
+private slots:
+    void checkLogin();
+    void handleFaceRecognition();
+
 private:
     QLineEdit *emailInput;
     QLineEdit *passwordInput;
     QPushButton *forgotButton;
-
-    int loginAttempts; // compteur d'essais
-
-private slots:
-    void checkLogin();             // Vérification normale
-    void handleFaceRecognition();  // En cas d'échec
+    int loginAttempts;
 };
 
 #endif // LOGINWINDOW_H

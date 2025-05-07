@@ -1973,21 +1973,21 @@ color: rgb(86, 1, 38);</string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pushButton_13">
+                     <widget class="QPushButton" name="gestionlocatairesbtn">
                       <property name="text">
                        <string>Locataires</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pushButton_11">
+                     <widget class="QPushButton" name="gestionlocauxbtn">
                       <property name="text">
                        <string>locaux commerciaux</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pushButton_17">
+                     <widget class="QPushButton" name="gestioneventbtn">
                       <property name="text">
                        <string>Evenements</string>
                       </property>
@@ -2001,7 +2001,7 @@ color: rgb(86, 1, 38);</string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pushButton_16">
+                     <widget class="QPushButton" name="gestionservicebtn">
                       <property name="text">
                        <string>Services</string>
                       </property>
